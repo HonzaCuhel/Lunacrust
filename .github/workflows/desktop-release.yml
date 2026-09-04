@@ -47,6 +47,8 @@ jobs:
         run: node tools/verify-package-source.js "${{ matrix.executable }}"
       - name: Verify packaged application (macOS)
         if: runner.os == 'macOS'
+        env:
+          LUNACRUST_SOFTWARE_RENDERING: ${{ matrix.arch == 'x64' && '1' || '0' }}
         run: node tools/verify-bundle.js "${{ matrix.executable }}"
       - name: Install Debian package
         if: runner.os == 'Linux'

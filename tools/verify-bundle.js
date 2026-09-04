@@ -35,10 +35,10 @@ try {
   check('Lunacrust application identity', security.name === 'Lunacrust');
   if (target !== 'dev') {
     check('running the packaged ASAR', security.packaged && security.appPath.endsWith('app.asar'));
-    const entries=listPackage(security.appPath);
+    const entries=listPackage(security.appPath).map(path=>path.replaceAll('\\','/'));
     check('prototype audio and developer hooks excluded', !entries.some(path=>/\.mp3$/i.test(path)||/electron\/(probe[^/]*|smoke)\.js$/.test(path)));
     for (const file of ['app/vendor/LICENSE','app/fonts/OFL.txt']) {
-      check(`bundled notice: ${file}`, extractFile(security.appPath,file).length>0);
+      check(`bundled notice: ${file}`, extractFile(security.appPath,join(...file.split('/'))).length>0);
     }
     for (const file of ['LICENSE','THIRD_PARTY_NOTICES.md','electron-LICENSE','LICENSES.chromium.html','three-LICENSE']) {
       check(`runtime notice: ${file}`, (await readFile(join(security.resourcesPath,'licenses',file))).length>0);

@@ -22,13 +22,14 @@ export async function verifyPackageSource(target) {
   }
   async function walk(dir){
     for(const entry of await readdir(dir,{withFileTypes:true})){
-      const path=join(dir,entry.name),rel=relative(root,path).replaceAll('\\','/');
+      const path=join(dir,entry.name),nativeRelative=relative(root,path),rel=nativeRelative.replaceAll('\\','/');
       if(entry.name==='.DS_Store'||/\.mp3$/i.test(rel)||/^electron\/(probe[^/]*|smoke)\.js$/.test(rel))continue;
       if(entry.isDirectory()){await walk(path);continue;}
       if(!entry.isFile())throw new Error(`Unexpected source symlink: ${rel}`);
       const current=await readFile(path);
-      try{if(!current.equals(extractFile(archive,rel)))mismatches.push(rel);}
-      catch{mismatches.push(`${rel} (missing)`);}
+      // ASAR traverses directories using the host OS path separator.
+      try{if(!current.equals(extractFile(archive,nativeRelative)))mismatches.push(rel);}
+      catch(error){mismatches.push(`${rel} (${error.message})`);}
       checked++;
     }
   }
