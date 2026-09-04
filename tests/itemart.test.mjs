@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 import { deflateSync } from 'node:zlib';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { SPRITE, SPRITE_KEYS, itemPixels, hasSprite } from '../app/js/itemart.js';
 import { ITEMS, ITEM_BY_KEY } from '../app/js/items.js';
@@ -244,7 +245,7 @@ const png = Buffer.concat([
   chunk('IHDR', ihdr), chunk('IDAT', deflateSync(raw)), chunk('IEND', Buffer.alloc(0)),
 ]);
 
-const out = '/private/tmp/claude-501/itemart-sheet.png';
+const out = fileURLToPath(new URL('../output/itemart-sheet.png', import.meta.url));
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, png);
 

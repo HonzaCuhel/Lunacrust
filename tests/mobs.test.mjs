@@ -5,6 +5,7 @@
 // deterministic rather than flaky.
 
 import assert from 'node:assert/strict';
+import { fileURLToPath } from 'node:url';
 import {
   Mobs, mulberry32, MAX_MOBS, SIM_DT, STATE, probeStep, chooseHeading, knockbackImpulse,
 } from '../app/js/mobs.js';
@@ -580,7 +581,7 @@ test('spawn director: every spawn lands 24-56 blocks from the player', () => {
 // spawns exactly that) still runs the real check.
 if (typeof global.gc !== 'function' && !process.env._MOBS_GC_CHILD) {
   const { spawnSync } = await import('node:child_process');
-  const r = spawnSync(process.execPath, ['--expose-gc', new URL(import.meta.url).pathname],
+  const r = spawnSync(process.execPath, ['--expose-gc', fileURLToPath(import.meta.url)],
     { stdio: 'inherit', env: { ...process.env, _MOBS_GC_CHILD: '1' } });
   process.exit(r.status ?? 1);
 }
