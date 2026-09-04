@@ -6,7 +6,7 @@
 
 ## Play
 
-Download the package for your computer from the project's release artifacts:
+The current release candidate is available in the [verified CI artifacts](https://github.com/HonzaCuhel/Lunacrust/actions/runs/33927997741). A signed public release is still pending; see [release status](docs/RELEASE_STATUS.md). Choose the package for your computer:
 
 | Computer | Package | Install |
 | --- | --- | --- |
