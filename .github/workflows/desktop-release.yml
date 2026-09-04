@@ -45,10 +45,8 @@ jobs:
         run: npm run dist:${{ matrix.platform }} -- --${{ matrix.arch }}
       - name: Verify package matches checked-out source
         run: node tools/verify-package-source.js "${{ matrix.executable }}"
-      - name: Verify packaged application (macOS)
-        if: runner.os == 'macOS'
-        env:
-          LUNACRUST_SOFTWARE_RENDERING: ${{ matrix.arch == 'x64' && '1' || '0' }}
+      - name: Verify packaged application (native Apple Silicon)
+        if: runner.os == 'macOS' && matrix.arch == 'arm64'
         run: node tools/verify-bundle.js "${{ matrix.executable }}"
       - name: Install Debian package
         if: runner.os == 'Linux'
@@ -94,3 +92,36 @@ jobs:
             dist/Lunacrust-*.deb
             dist/Lunacrust-*-source.tar.gz
             dist/SHA256SUMS.txt
+  intel-runtime:
+    name: Intel macOS runtime (Rosetta on Apple Silicon)
+    needs: desktop
+    if: ${{ !cancelled() }}
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: Lunacrust-mac-x64
+          path: dist-intel
+      - name: Verify downloaded installer integrity
+        working-directory: dist-intel
+        run: shasum -a 256 -c SHA256SUMS.txt
+      - name: Ensure Rosetta is available
+        run: |
+          if ! /usr/bin/arch -x86_64 /usr/bin/true; then
+            sudo /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+          fi
+      # The hosted Intel VM failed to create WebGL2. Test the original ZIP via
+      # Rosetta, without adding a Vulkan loader or disabling Chromium's sandbox.
+      # This verifies translation compatibility, not a physical Intel GPU.
+      - name: Verify original Intel application through Rosetta
+        run: |
+          ditto -x -k dist-intel/Lunacrust-*-mac-x64-unsigned.zip "$RUNNER_TEMP/lunacrust-intel"
+          node tools/verify-package-source.js "$RUNNER_TEMP/lunacrust-intel/Lunacrust.app"
+          node tools/verify-bundle.js "$RUNNER_TEMP/lunacrust-intel/Lunacrust.app"

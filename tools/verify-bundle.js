@@ -5,6 +5,7 @@ import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { listPackage, extractFile } from '@electron/asar';
+import { spawnSync } from 'node:child_process';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const target = process.argv[2] ?? 'dev';
 const profile = await mkdtemp(join(tmpdir(), 'lunacrust-bundle-'));
@@ -17,15 +18,26 @@ else {
   await access(options.executablePath);
 }
 if (process.env.LUNACRUST_SOFTWARE_RENDERING === '1') options.args.push('--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader');
-let app, passed = 0;
+let app, closed, passed = 0, stderr = '';
+const rendererErrors = [];
+async function bounded(promise, milliseconds, message) {
+  let timer;
+  try { return await Promise.race([promise, new Promise((_, reject) => { timer=setTimeout(() => reject(new Error(message)),milliseconds); })]); }
+  finally { clearTimeout(timer); }
+}
 function check(name, ok, detail='') {
   if (!ok) throw new Error(`${name}: ${detail}`);
   console.log(`PASS ${name}${detail ? ` — ${detail}` : ''}`); passed++;
 }
 try {
   app = await electron.launch(options);
+  const child = app.process();
+  closed = new Promise(resolve => child.once('close', (code, signal) => resolve({code, signal})));
+  child.stdout?.resume();
+  child.stderr?.on('data', data => { stderr=(stderr+data).slice(-12000); });
   const page = await app.firstWindow();
-  page.on('pageerror', error => console.error('Renderer error:', error.message));
+  if (process.env.LUNACRUST_SOFTWARE_RENDERING === '1') await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(960,600));
+  page.on('pageerror', error => { rendererErrors.push(error.message); console.error('Renderer error:', error.message); });
   await page.waitForFunction(() => window.__space?.game && document.querySelectorAll('.card').length === 8);
   check('private application origin', page.url() === 'app://space/index.html', page.url());
   const security = await app.evaluate(({ BrowserWindow, app }) => {
@@ -76,22 +88,45 @@ try {
     if (await api.loadWorld('release-probe') !== null) throw new Error('deleted save resurrected');
   });
   check('save, load and delete IPC', true);
-  await page.evaluate(() => {
+  await page.evaluate(software => {
     const S=window.__space; S.game.hooks.onPointerLost=()=>{};
+    // Keep the virtual CPU renderer's workload bounded; the same real world,
+    // worker and survival startup still have to produce at least 25 chunks.
+    if (software) {
+      Object.assign(S.state.settings,{renderDistance:3,renderScale:0.75});
+      S.game.applySettings({renderDistance:3,renderScale:0.75});
+    }
     S.state.mode='survival'; S.selectPlanet('mars'); document.getElementById('btn-land').click();
-  });
+  }, process.env.LUNACRUST_SOFTWARE_RENDERING === '1');
   await page.waitForFunction(() => window.__space.game.spawned && window.__space.game.world.chunks.size>=25,{},{timeout:60000});
   const world=await page.evaluate(() => ({chunks:window.__space.game.world.chunks.size,kit:window.__space.game.inventory.count(54)}));
   check('worker streams a playable world', world.chunks>=25, `${world.chunks} chunks`);
   check('survival starter kit', world.kit>=1);
   if (process.env.LUNACRUST_SCREENSHOT) await page.screenshot({path:resolve(process.env.LUNACRUST_SCREENSHOT)});
-  console.log(`${target==='dev'?'DEVELOPMENT':'PACKAGED'} BUILD: ${passed} checks passed`);
+  if (rendererErrors.length) throw new Error(`Renderer errors: ${rendererErrors.join('; ')}`);
 } catch (error) {
   console.error(error.stack || error.message); process.exitCode=1;
+  if (stderr) console.error('Electron diagnostics:',stderr);
 } finally {
   if (app) {
-    try { await Promise.race([app.close(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('close timed out')),10000).unref())]); }
-    catch { app.process().kill('SIGKILL'); }
+    const child=app.process();
+    try {
+      await bounded(app.close(),30000,'Application did not close gracefully within 30 seconds');
+      const result=await bounded(closed,15000,'Application process did not exit');
+      if (result.code !== 0) throw new Error(`Application exited with code ${result.code}, signal ${result.signal}`);
+      console.log('PASS graceful application shutdown');
+    } catch (error) {
+      console.error(error.message); process.exitCode=1;
+      if (child.exitCode == null && child.signalCode == null) {
+        if (process.platform === 'win32') spawnSync('taskkill',['/PID',String(child.pid),'/T','/F'],{timeout:10000,stdio:'ignore'});
+        else child.kill('SIGKILL');
+      }
+      await bounded(closed,10000,'Forced application shutdown timed out').catch(error => console.error(error.message));
+    }
   }
-  await rm(profile,{recursive:true,force:true});
+  // Windows can retain Chromium database handles briefly after process exit.
+  // Retry only transient filesystem errors; a persistent lock remains a failure.
+  try { await rm(profile,{recursive:true,force:true,maxRetries:8,retryDelay:250}); }
+  catch (error) { console.error('Temporary profile cleanup failed:',error.message); process.exitCode=1; }
 }
+if (!process.exitCode) console.log(`${target==='dev'?'DEVELOPMENT':'PACKAGED'} BUILD: ${passed} checks passed; process exited and temporary profile removed`);

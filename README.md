@@ -13,9 +13,10 @@ Download the package for your computer from the project's release artifacts:
 | Mac with Apple Silicon | `Lunacrust-1.0.0-mac-arm64-unsigned.dmg` | Open the DMG and drag Lunacrust into Applications. |
 | Mac with Intel processor | `Lunacrust-1.0.0-mac-x64-unsigned.dmg` | Open the DMG and drag Lunacrust into Applications. |
 | Windows x64 | `Lunacrust-1.0.0-win-x64-unsigned.exe` | Run the installer; no Node.js needed. |
-| Linux x64 | `Lunacrust-1.0.0-linux-x86_64.AppImage` | Make executable and run. A `Lunacrust-1.0.0-linux-amd64.deb` is also available for Debian/Ubuntu. |
+| Ubuntu / Debian x64 | `Lunacrust-1.0.0-linux-amd64.deb` | Open with your software installer, or use `sudo apt install ./Lunacrust-1.0.0-linux-amd64.deb`. |
+| Other Linux x64 | `Lunacrust-1.0.0-linux-x86_64.AppImage` | Make executable and run on a system that supports Chromium's sandbox. This format has not had a native runtime check. |
 
-The DEB includes installer setup for the Chromium sandbox and an application-specific AppArmor profile, relevant on Ubuntu systems that restrict unprivileged user namespaces. AppImage and unpacked launches do not run that installer. Native Linux execution and installation remain unverified; see [packaging verification](docs/PACKAGING_VERIFICATION.md).
+The DEB includes installer setup for the Chromium sandbox and an application-specific AppArmor profile, relevant on Ubuntu systems that restrict unprivileged user namespaces. AppImage and unpacked launches do not run that installer. The DEB was installed and its sandboxed application tested on Ubuntu 24.04 in native CI; see [packaging verification](docs/PACKAGING_VERIFICATION.md) for the precise platform coverage.
 
 Package availability and actual verification are recorded in [release status](docs/RELEASE_STATUS.md). Local builds are unsigned unless the publisher supplies signing credentials. macOS may require approval in **System Settings → Privacy & Security** after opening; a downloaded unsigned app does not have the seamless Gatekeeper experience of a signed, notarized release. Windows may display an unknown-publisher prompt. Only open artifacts you trust. Never disable system security globally.
 
