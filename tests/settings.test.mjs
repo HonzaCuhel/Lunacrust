@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import { normalizeSettings, DEFAULT_SETTINGS } from '../app/js/settings.js';
+assert.deepEqual(normalizeSettings(), DEFAULT_SETTINGS);
+for (const bad of [null, [], 'broken', 4]) assert.deepEqual(normalizeSettings(bad), DEFAULT_SETTINGS);
+const s = normalizeSettings({fov: Infinity, sensitivity: 'fast', renderDistance: -90, volume: 80, musicVolume: NaN, renderScale: 20, invertY: 'false', playerName: '\u0000  Ada  ', mode: 'unknown'});
+assert.equal(s.fov, 74); assert.equal(s.sensitivity, 1); assert.equal(s.renderDistance, 3);
+assert.equal(s.volume, 1); assert.equal(s.musicVolume, .35); assert.equal(s.renderScale, 2);
+assert.equal(s.invertY, false); assert.equal(s.playerName, 'Ada'); assert.equal(s.mode, 'survival');
+assert.equal(normalizeSettings({playerName: 'x'.repeat(100)}).playerName.length, 24);
+assert.equal(normalizeSettings({volume: 0}).volume, 0);
+console.log('settings: corrupt inputs, numeric bounds, names and zero volume passed');

@@ -1,0 +1,72 @@
+name: Desktop build and verification
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            platform: mac
+            arch: arm64
+            executable: dist/mac-arm64/Lunacrust.app
+          - runner: macos-15-intel
+            platform: mac
+            arch: x64
+            executable: dist/mac/Lunacrust.app
+          - runner: ubuntu-24.04
+            platform: linux
+            arch: x64
+            executable: dist/linux-unpacked/lunacrust
+          - runner: windows-2025
+            platform: win
+            arch: x64
+            executable: dist/win-unpacked/Lunacrust.exe
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Package native installers (unsigned, no publishing)
+        run: npm run dist:${{ matrix.platform }} -- --${{ matrix.arch }}
+      - name: Verify package matches checked-out source
+        run: node tools/verify-package-source.js "${{ matrix.executable }}"
+      - name: Verify packaged application (macOS and Windows)
+        if: runner.os != 'Linux'
+        run: node tools/verify-bundle.js "${{ matrix.executable }}"
+      - name: Verify packaged application (Linux with virtual display)
+        if: runner.os == 'Linux'
+        env:
+          LUNACRUST_SOFTWARE_RENDERING: '1'
+        run: xvfb-run --auto-servernum node tools/verify-bundle.js "${{ matrix.executable }}"
+      - name: Export source
+        if: runner.os == 'Linux'
+        run: npm run source:archive
+      - run: npm run checksums
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: Lunacrust-${{ matrix.platform }}-${{ matrix.arch }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            dist/Lunacrust-*.dmg
+            dist/Lunacrust-*.zip
+            dist/Lunacrust-*.exe
+            dist/Lunacrust-*.AppImage
+            dist/Lunacrust-*.deb
+            dist/Lunacrust-*-source.tar.gz
+            dist/SHA256SUMS.txt

@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { LanMenu } from '../app/js/net/lanmenu.js';
+const joins = [];
+const menu = Object.create(LanMenu.prototype);
+menu.hooks = { onJoin: (value) => joins.push(value), toast() {} };
+menu.addrInput = { value: '192.168.1.42' };
+menu.portInput = { value: '' };
+menu._joinManual();
+assert.deepEqual(joins.pop(), { address: '192.168.1.42', port: 25710 });
+menu.addrInput.value = '192.168.1.42:25711';
+menu._joinManual();
+assert.deepEqual(joins.pop(), { address: '192.168.1.42', port: 25711 });
+menu.addrInput.value = '192.168.1.42';
+menu.portInput.value = '70000';
+menu._joinManual();
+assert.equal(joins.length, 0, 'invalid ports never start a join');
+console.log('Direct connect default, pasted address and validation verified');

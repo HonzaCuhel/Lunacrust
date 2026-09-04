@@ -1,0 +1,184 @@
+{
+  "name": "lunacrust",
+  "version": "1.0.0",
+  "description": "An open-source voxel adventure across eight worlds in the Solar System.",
+  "main": "electron/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron .",
+    "web": "node tools/serve.js",
+    "vendor": "node tools/vendor.js",
+    "postinstall": "node tools/vendor.js && node tools/prepare-desktop.js",
+    "dist": "node tools/package.js",
+    "probe": "node tools/probe.js",
+    "test": "node tools/test.js",
+    "probe:survival": "node tools/probe.js survival",
+    "icon": "node tools/make-icon.js",
+    "dist:mac": "node tools/package.js mac",
+    "verify:bundle": "node tools/verify-bundle.js",
+    "probe:lan": "node tools/probe-lan.js",
+    "dist:linux": "node tools/package.js linux",
+    "dist:win": "node tools/package.js win",
+    "checksums": "node tools/checksums.js",
+    "source:archive": "node tools/source-archive.js",
+    "probe:smoke": "node tools/probe.js smoke",
+    "probe:close": "node tools/probe-close.js"
+  },
+  "keywords": [
+    "voxel",
+    "space",
+    "sandbox",
+    "co-op",
+    "electron",
+    "three"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "44.2.0",
+    "electron-builder": "26.15.3",
+    "playwright": "1.62.1"
+  },
+  "dependencies": {
+    "three": "0.170.0"
+  },
+  "build": {
+    "appId": "io.lunacrust.game",
+    "productName": "Lunacrust",
+    "copyright": "Copyright © 2026 Jan Cuhel and Lunacrust contributors",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "asar": true,
+    "npmRebuild": false,
+    "files": [
+      "electron/**/*",
+      "app/**/*",
+      "package.json",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md",
+      "!electron/probe*.js",
+      "!electron/smoke.js",
+      "!app/audio/*.mp3",
+      "!**/.DS_Store",
+      "!**/*.map"
+    ],
+    "extraResources": [
+      {
+        "from": "LICENSE",
+        "to": "licenses/LICENSE"
+      },
+      {
+        "from": "THIRD_PARTY_NOTICES.md",
+        "to": "licenses/THIRD_PARTY_NOTICES.md"
+      },
+      {
+        "from": "node_modules/three/LICENSE",
+        "to": "licenses/three-LICENSE"
+      },
+      {
+        "from": "node_modules/electron/dist/LICENSE",
+        "to": "licenses/electron-LICENSE"
+      },
+      {
+        "from": "node_modules/electron/dist/LICENSES.chromium.html",
+        "to": "licenses/LICENSES.chromium.html"
+      }
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "category": "public.app-category.games",
+      "icon": "build/icon.png",
+      "minimumSystemVersion": "13.0",
+      "darkModeSupport": true,
+      "hardenedRuntime": true,
+      "extendInfo": {
+        "NSLocalNetworkUsageDescription": "Lunacrust finds and connects to co-op games on your local network."
+      }
+    },
+    "dmg": {
+      "title": "Lunacrust ${version}",
+      "contents": [
+        {
+          "x": 145,
+          "y": 160
+        },
+        {
+          "x": 415,
+          "y": 160,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "shortcutName": "Lunacrust"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Game",
+      "icon": "build/icon.png",
+      "maintainer": "Jan Cuhel",
+      "executableName": "lunacrust",
+      "desktop": {
+        "entry": {
+          "Name": "Lunacrust",
+          "Comment": "Explore, mine and build across eight worlds",
+          "Categories": "Game;AdventureGame;"
+        }
+      },
+      "syncDesktopName": true
+    },
+    "afterPack": "./tools/after-pack.cjs"
+  },
+  "author": "jancuhel",
+  "engines": {
+    "node": ">=22.17.0"
+  },
+  "homepage": "https://github.com/HonzaCuhel",
+  "desktopName": "io.lunacrust.game.desktop"
+}
