@@ -91,6 +91,7 @@ For browser development, `npm run web` opens a local server at `http://127.0.0.1
 
 ```sh
 npm test                 # deterministic mechanics, network, settings and storage tests
+node tools/probe-campaign-lan.mjs # two-app campaign repair, travel and rejoin
 npm run probe:lan        # three actual Electron instances, isolated temporary saves
 node tools/probe-capacity.js dist/mac-arm64/Lunacrust.app # packaged host + seven TCP guests
 npm run probe:survival   # native survival mechanics
