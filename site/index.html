@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101715" />
+    <meta
+      name="description"
+      content="Eight worlds. One last signal. Play Lunacrust, an open-source voxel space adventure, in your browser. Build freely, follow a survival campaign, or bring your crew over desktop LAN."
+    />
+    <meta
+      property="og:title"
+      content="Lunacrust — Eight worlds. One last signal."
+    />
+    <meta
+      property="og:description"
+      content="Your expedition starts here. Play the browser demo of an open-source space adventure."
+    />
+    <meta
+      property="og:image"
+      content="https://honzacuhel.github.io/Lunacrust/assets/trailer-poster.jpg"
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="assets/SpaceGrotesk.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Lunacrust — Eight worlds. One last signal.</title>
+    <script src="main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="nav">
+      <a class="brand" href="#" aria-label="Lunacrust home"
+        ><svg viewBox="0 0 40 40" aria-hidden="true">
+          <path d="M5 10h10v16h20v9H5z" />
+          <path d="M24 5h11v11H24z" /></svg
+        ><span>LUNACRUST</span></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#worlds">The worlds</a><a href="#expedition">Your expedition</a
+        ><a href="#download">Desktop</a
+        ><a class="nav-source" href="https://github.com/HonzaCuhel/Lunacrust"
+          >Source ↗</a
+        >
+      </nav>
+      <a class="nav-play" href="./demo/"
+        >Play free <span aria-hidden="true">↗</span></a
+      >
+    </header>
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <img
+          class="hero-image"
+          src="assets/world-europa.jpg"
+          alt="Jupiter fills the sky above the ice spires of Europa, captured in Lunacrust"
+          width="1920"
+          height="1080"
+          fetchpriority="high"
+        />
+        <div class="hero-shade"></div>
+        <div class="hero-content">
+          <p class="eyebrow light">
+            <span class="signal-dot"></span> INCOMING TRANSMISSION / 001
+          </p>
+          <h1 id="hero-title">Eight worlds.<br />One last signal.</h1>
+          <p class="hero-deck">
+            A little shelter. A distant planet.<br />An expedition that belongs
+            to you.
+          </p>
+          <div class="actions">
+            <a class="button lime" href="./demo/"
+              >Start exploring <span aria-hidden="true">↗</span></a
+            ><a class="watch-link" href="#trailer"
+              ><span class="play-icon" aria-hidden="true">▶</span> Watch the
+              film <span class="duration">0:35</span></a
+            >
+          </div>
+          <p class="hero-note">
+            Free browser demo · Keyboard &amp; mouse · No account
+          </p>
+        </div>
+        <div class="hero-coordinate">
+          <span>FIELD NOTES — 05 / 08</span><strong>EUROPA</strong
+          ><span>Jupiter is closer than it looks.</span>
+        </div>
+        <div class="hero-wordmark" aria-hidden="true">LUNACRUST</div>
+        <div class="hero-bottom">
+          <span>AN OPEN-SOURCE SPACE ADVENTURE</span
+          ><a href="#worlds"
+            >LEAVE FAMILIAR GROUND <span aria-hidden="true">↓</span></a
+          >
+        </div>
+      </section>
+      <div class="release-strip">
+        <span class="status"
+          ><span class="status-dot"></span> RELEASE CANDIDATE 1.1</span
+        >
+        <p>Ready to explore. Still being refined.</p>
+        <a href="#readiness"
+          >What’s ready? <span aria-hidden="true">↗</span></a
+        >
+      </div>
+
+      <section
+        class="section film-section"
+        id="trailer"
+        aria-labelledby="film-title"
+      >
+        <div class="section-heading">
+          <p class="eyebrow">01 / THE FILM</p>
+          <h2 id="film-title">Go a little<br /><em>further.</em></h2>
+          <p>
+            Leave Earth behind. Find your footing in unfamiliar places. See
+            where the next signal takes you.
+          </p>
+        </div>
+        <figure class="film">
+          <video
+            id="trailer-video"
+            controls
+            playsinline
+            preload="none"
+            poster="assets/trailer-poster.jpg"
+            aria-label="Lunacrust trailer, 35 seconds, with instrumental music"
+          >
+            <source src="assets/lunacrust-trailer.mp4" type="video/mp4" />
+            <p>
+              <a href="assets/lunacrust-trailer.mp4">Download the trailer</a>
+            </p>
+          </video>
+          <figcaption>
+            <span>ACTUAL IN-ENGINE FOOTAGE · CREATIVE CAMERA</span
+            ><a href="#film-description">Text description ↓</a>
+          </figcaption>
+        </figure>
+        <details id="film-description" class="film-description">
+          <summary>Read the trailer description</summary>
+          <p>
+            A camera glides above Europa’s ice spires beneath Jupiter. Earth’s
+            forests give way to Mars, then a montage visits all eight playable
+            worlds. Real journal and creature screens introduce the survival
+            campaign and free building. The closing title reads “Lunacrust —
+            Eight worlds. One last signal.” Browser play is single-player;
+            desktop LAN supports up to eight players. The film has instrumental
+            music and no spoken narration.
+          </p>
+        </details>
+      </section>
+
+      <section
+        class="section worlds-section"
+        id="worlds"
+        aria-labelledby="worlds-title"
+      >
+        <div class="section-heading">
+          <p class="eyebrow">02 / YOUR NEXT HORIZON</p>
+          <h2 id="worlds-title">A world away<br />from ordinary.</h2>
+          <p>
+            Eight places to get wonderfully sidetracked. Every destination is
+            open in Creative. Survival makes you earn the journey.
+          </p>
+        </div>
+        <div class="world-selector" role="group" aria-label="Choose a world">
+          <button type="button" data-world="earth" aria-pressed="false">
+            <span>01</span>Earth</button
+          ><button type="button" data-world="moon" aria-pressed="false">
+            <span>02</span>Moon</button
+          ><button type="button" data-world="mars" aria-pressed="false">
+            <span>03</span>Mars</button
+          ><button type="button" data-world="venus" aria-pressed="false">
+            <span>04</span>Venus</button
+          ><button type="button" data-world="europa" aria-pressed="true">
+            <span>05</span>Europa</button
+          ><button type="button" data-world="io" aria-pressed="false">
+            <span>06</span>Io</button
+          ><button type="button" data-world="titan" aria-pressed="false">
+            <span>07</span>Titan</button
+          ><button type="button" data-world="jupiter" aria-pressed="false">
+            <span>08</span>Jupiter
+          </button>
+        </div>
+        <div class="world-stage">
+          <img
+            id="world-image"
+            src="assets/world-europa.jpg"
+            alt="Europa’s frozen landscape beneath Jupiter"
+            width="1920"
+            height="1080"
+            loading="lazy"
+          />
+          <div class="world-shade"></div>
+          <div class="world-copy" aria-live="polite" aria-atomic="true">
+            <p class="eyebrow" id="world-type">ICE SPIRES / LOW GRAVITY</p>
+            <h3 id="world-name">Europa</h3>
+            <p id="world-description">
+              Find your own quiet corner of a frozen ocean. There’s nothing
+              small about the view.
+            </p>
+          </div>
+          <span class="world-number" id="world-number" aria-hidden="true"
+            >05</span
+          >
+        </div>
+      </section>
+
+      <section
+        class="section expedition-section"
+        id="expedition"
+        aria-labelledby="expedition-title"
+      >
+        <div class="section-heading">
+          <p class="eyebrow">03 / NO TWO EXPEDITIONS ALIKE</p>
+          <h2 id="expedition-title">Make a home.<br />Then go beyond.</h2>
+          <p>
+            A story to follow, or a blank canvas to claim. Make the journey your
+            own.
+          </p>
+        </div>
+        <div class="modes">
+          <article class="mode story">
+            <div class="mode-label"><span>SURVIVAL</span><span>01</span></div>
+            <h3>The Last<br />Signal.</h3>
+            <p>
+              Start on Earth with a landing kit. Gather supplies, craft better
+              tools and restore the relay network through your mission journal.
+              Unlock the next world, carry your equipment onward and find the
+              ending on Jupiter.
+            </p>
+            <div class="mode-footer">
+              EIGHT CHAPTERS. A JOURNEY TO FINISH.<span aria-hidden="true"
+                >↗</span
+              >
+            </div>
+          </article>
+          <article class="mode creative">
+            <div class="mode-label"><span>CREATIVE</span><span>02</span></div>
+            <h3>No limits<br />on where.</h3>
+            <p>
+              Pick any world from the start. Fly, build freely and shape a place
+              worth coming back to. Keep up to 50 named checkpoints, so a new
+              idea doesn’t have to cost you the last one.
+            </p>
+            <div class="mode-footer">
+              EVERY WORLD. YOUR RULES.<span aria-hidden="true">↗</span>
+            </div>
+          </article>
+        </div>
+        <div class="crew">
+          <div class="crew-count" aria-hidden="true">01<span>—</span>08</div>
+          <div>
+            <p class="eyebrow">THE SAME WI-FI. A BIGGER ADVENTURE.</p>
+            <h3>Bring your crew.</h3>
+            <p>
+              Host from the desktop app and invite up to seven friends on your
+              local network. Share a world, build together and meet the strange
+              things that live there.
+            </p>
+            <a href="#download"
+              >Explore desktop LAN <span aria-hidden="true">↗</span></a
+            >
+          </div>
+          <p class="crew-note">
+            LAN is a desktop feature.<br />The browser demo is single-player.
+          </p>
+        </div>
+      </section>
+
+      <section
+        class="download-section"
+        id="download"
+        aria-labelledby="download-title"
+      >
+        <div class="section download-inner">
+          <p class="eyebrow">04 / READY FOR TAKEOFF?</p>
+          <div class="download-top">
+            <h2 id="download-title">Your expedition<br />starts here.</h2>
+            <div>
+              <a class="button ink" href="./demo/"
+                >Play the browser demo <span aria-hidden="true">↗</span></a
+              >
+              <p>
+                Desktop keyboard &amp; mouse. No install.<br />Browser saves
+                stay on this device.
+              </p>
+            </div>
+          </div>
+          <div class="desktop-heading">
+            <h3>Prefer a desktop app?</h3>
+            <span>1.1 CANDIDATE · PUBLICATION PENDING</span>
+          </div>
+          <div class="platforms">
+            <article>
+              <span class="platform-mark" aria-hidden="true">⌘</span>
+              <h4>macOS</h4>
+              <p>Apple Silicon + Intel<br />DMG · macOS 13+</p>
+              <span class="availability">Unsigned candidate prepared</span>
+            </article>
+            <article>
+              <span class="platform-mark windows-mark" aria-hidden="true"
+                >⊞</span
+              >
+              <h4>Windows</h4>
+              <p>64-bit installer<br />NSIS / EXE</p>
+              <span class="availability">Unsigned candidate prepared</span>
+            </article>
+            <article>
+              <span class="platform-mark" aria-hidden="true">&gt;_</span>
+              <h4>Linux</h4>
+              <p>64-bit DEB + AppImage<br />Ubuntu / Debian recommended</p>
+              <span class="availability">DEB installation tested in CI</span>
+            </article>
+          </div>
+          <div class="download-boundary">
+            <p>
+              The installers are built and verified to the extent described
+              below. GitHub releases are still drafts, so public desktop
+              downloads are not available yet.
+            </p>
+            <a href="https://github.com/HonzaCuhel/Lunacrust/releases"
+              >Check published releases ↗</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="section faq-section"
+        id="readiness"
+        aria-labelledby="readiness-title"
+      >
+        <div>
+          <p class="eyebrow">05 / FLIGHT CHECK</p>
+          <h2 id="readiness-title">A little clarity<br />before liftoff.</h2>
+          <p class="faq-intro">
+            An independent game, shared openly.<br />Here’s exactly where it
+            stands.
+          </p>
+        </div>
+        <div class="faq-list">
+          <details open>
+            <summary>
+              Is the game actually ready?<span aria-hidden="true">+</span>
+            </summary>
+            <p>
+              Ready for beta testing. The campaign, checkpoints, sprint,
+              settings and local multiplayer have automated coverage, and
+              desktop packages have passed native CI. A full survival run
+              without injected resources, physical two-computer Wi-Fi and
+              ordinary target-device testing still need validation. We’re
+              calling this a release candidate, not a stable release.
+            </p>
+          </details>
+          <details>
+            <summary>
+              What’s still rough around the edges?<span aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <p>
+              The Fabricator doesn’t yet show ingredients for unavailable
+              recipes. For the first Stone Pickaxe, collect three rocks and two
+              rods. Some in-game flight and respawn hints should say “Creative
+              only.” The campaign’s pacing and first-time onboarding also need
+              playtesting.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Can we play together in the browser?<span aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <p>
+              The browser demo is single-player. Desktop players on the same
+              private Wi-Fi or wired network can open a world to LAN and join by
+              discovery or host address. Everyone needs the same version. Guest
+              Wi-Fi isolation or a firewall can prevent a connection.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Why aren’t the installers a one-click release yet?<span
+                aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <p>
+              macOS and Windows candidates are unsigned, and macOS isn’t
+              notarized, so the operating system can show a security approval
+              prompt. Linux DEB installation was tested on Ubuntu 24.04 in CI;
+              AppImage is built but hasn’t had a runtime launch check. Public
+              releases remain drafts while those boundaries are made clear.
+            </p>
+          </details>
+          <details>
+            <summary>
+              What do I need to play?<span aria-hidden="true">+</span>
+            </summary>
+            <p>
+              A desktop keyboard, a mouse or trackpad, and WebGL2 graphics.
+              Start with a lower render distance and resolution scale on
+              integrated graphics. The website and trailer work on mobile; the
+              game is designed for desktop input. Browser storage is local, so
+              clearing site data removes browser saves.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Is it really open source?<span aria-hidden="true">+</span>
+            </summary>
+            <p>
+              Yes. The game’s code and original artwork and music are under MIT,
+              with separate notices for dependencies and fonts. Read the source,
+              make changes, and help shape what comes next. Original branding
+              and asset provenance are documented; that is not a formal
+              trademark clearance.
+            </p>
+            <a href="https://github.com/HonzaCuhel/Lunacrust"
+              >Explore the source ↗</a
+            >
+          </details>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <a class="brand" href="#">LUNACRUST</a>
+      <p>Small blocks. A very big sky.</p>
+      <div>
+        <a href="https://github.com/HonzaCuhel/Lunacrust">GitHub ↗</a
+        ><a href="LICENSE">MIT license</a
+        ><a href="THIRD_PARTY_NOTICES.md">Credits</a>
+      </div>
+      <span>© 2026 JAN CUHEL &amp; CONTRIBUTORS</span>
+    </footer>
+  </body>
+</html>

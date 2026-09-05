@@ -1,0 +1,15 @@
+GSAP 3.14.2 — third-party animation dependency of the trailer source only.
+Copyright 2025, GreenSock. All rights reserved.
+Author: Jack Doyle.
+
+Official license: https://gsap.com/community/standard-license/
+Standard "No Charge" GSAP License; effective April 30, 2025, last modified May 30, 2025.
+Retrieved September 5, 2026. The original license notice is preserved in gsap.min.js.
+GSAP is not covered by Lunacrust's MIT license. It is not included in the game
+runtime or the deployed website, which presents the rendered MP4.
+
+The authoritative terms remain at the URL above. They permit implementation,
+reproduction and display for websites, web applications and digital interfaces,
+subject to restrictions on competing visual animation builders. No such builder
+is part of Lunacrust. This file is an attribution and source reference, not a
+replacement license or legal clearance.

@@ -1,0 +1,128 @@
+<template>
+  <style>
+    @font-face {
+      font-family: 'Space Grotesk';
+      src: url('/assets/SpaceGrotesk.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 300 700;
+      font-display: block;
+    }
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: 'Space Grotesk';
+      color: #d6ef8c;
+    }
+    [class~="scene-03-worlds-shot"] {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+    [class~="scene-03-worlds-photo"] {
+      position: absolute;
+      inset: 0;
+      transform-origin: center center;
+    }
+    [class~="scene-03-worlds-image"] {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    [class~="scene-03-worlds-heading"] {
+      position: absolute;
+      left: 5cqw;
+      top: 6.5cqh;
+      z-index: 2;
+      margin: 0;
+      padding: 1.04cqw 1.45cqw 1.2cqw;
+      background: #101715;
+      font-size: 7.8125cqw;
+      font-weight: 700;
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+    [class~="scene-03-worlds-label"] {
+      position: absolute;
+      left: 5cqw;
+      bottom: 19.5cqh;
+      display: flex;
+      align-items: baseline;
+      gap: 1.56cqw;
+      margin: 0;
+      padding: 0.72cqw 1.04cqw 0.83cqw;
+      background: #101715;
+      white-space: nowrap;
+    }
+    [class~="scene-03-worlds-name"] {
+      font-size: 2.6041667cqw;
+      font-weight: 700;
+      line-height: 1.04;
+      letter-spacing: -0.025em;
+    }
+    [class~="scene-03-worlds-index"] {
+      color: #f1f3e9;
+      font-size: 1.6666667cqw;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+  <div data-hf-id="hf-vetm" id="root" data-composition-id="scene-03-worlds" data-duration="8" data-width="1920" data-height="1080">
+    <figure data-hf-id="hf-znqv" id="scene-03-worlds-earth-shot" class="clip scene-03-worlds-shot" data-start="0" data-duration="1" data-track-index="0">
+      <div data-hf-id="hf-b1hx" id="scene-03-worlds-earth-photo" data-layout-allow-overflow class="scene-03-worlds-photo"><img data-hf-id="hf-yhla" id="scene-03-worlds-earth-image" class="scene-03-worlds-image" src="/assets/world-earth.jpg" alt="Actual Earth landscape in Lunacrust"></div>
+      <figcaption data-hf-id="hf-iarl" class="scene-03-worlds-label"><span data-hf-id="hf-jea0" class="scene-03-worlds-name">EARTH</span><span data-hf-id="hf-ao0r" class="scene-03-worlds-index">01 / 08</span></figcaption>
+    </figure>
+    <figure data-hf-id="hf-nx8j" id="scene-03-worlds-moon-shot" class="clip scene-03-worlds-shot" data-start="1" data-duration="1" data-track-index="0">
+      <div data-hf-id="hf-p8l6" id="scene-03-worlds-moon-photo" data-layout-allow-overflow class="scene-03-worlds-photo"><img data-hf-id="hf-b4bj" id="scene-03-worlds-moon-image" class="scene-03-worlds-image" src="/assets/world-moon.jpg" alt="Actual Moon landscape in Lunacrust"></div>
+      <figcaption data-hf-id="hf-lhqt" class="scene-03-worlds-label"><span data-hf-id="hf-o0rh" class="scene-03-worlds-name">MOON</span><span data-hf-id="hf-kfuo" class="scene-03-worlds-index">02 / 08</span></figcaption>
+    </figure>
+    <figure data-hf-id="hf-wjqw" id="scene-03-worlds-mars-shot" class="clip scene-03-worlds-shot" data-start="2" data-duration="1" data-track-index="0">
+      <div data-hf-id="hf-eqhi" id="scene-03-worlds-mars-photo" data-layout-allow-overflow class="scene-03-worlds-photo"><img data-hf-id="hf-2oyj" id="scene-03-worlds-mars-image" class="scene-03-worlds-image" src="/assets/world-mars.jpg" alt="Actual Mars landscape in Lunacrust"></div>
+      <figcaption data-hf-id="hf-monw" class="scene-03-worlds-label"><span data-hf-id="hf-xte5" class="scene-03-worlds-name">MARS</span><span data-hf-id="hf-rzg9" class="scene-03-worlds-index">03 / 08</span></figcaption>
+    </figure>
+    <figure data-hf-id="hf-fpkz" id="scene-03-worlds-venus-shot" class="clip scene-03-worlds-shot" data-start="3" data-duration="1" data-track-index="0">
+      <div data-hf-id="hf-zb7e" id="scene-03-worlds-venus-photo" data-layout-allow-overflow class="scene-03-worlds-photo"><img data-hf-id="hf-o6zl" id="scene-03-worlds-venus-image" class="scene-03-worlds-image" src="/assets/world-venus.jpg" alt="Actual Venus landscape in Lunacrust"></div>
+      <figcaption data-hf-id="hf-macv" class="scene-03-worlds-label"><span data-hf-id="hf-6fj5" class="scene-03-worlds-name">VENUS</span><span data-hf-id="hf-b57a" class="scene-03-worlds-index">04 / 08</span></figcaption>
+    </figure>
+    <figure data-hf-id="hf-as4l" id="scene-03-worlds-europa-shot" class="clip scene-03-worlds-shot" data-start="4" data-duration="1" data-track-index="0">
+      <div data-hf-id="hf-ftab" id="scene-03-worlds-europa-photo" data-layout-allow-overflow class="scene-03-worlds-photo"><img data-hf-id="hf-mfpw" id="scene-03-worlds-europa-image" class="scene-03-worlds-image" src="/assets/world-europa.jpg" alt="Actual Europa landscape in Lunacrust"></div>
+      <figcaption data-hf-id="hf-nh9y" class="scene-03-worlds-label"><span data-hf-id="hf-4mze" class="scene-03-worlds-name">EUROPA</span><span data-hf-id="hf-7gy7" class="scene-03-worlds-index">05 / 08</span></figcaption>
+    </figure>
+    <figure data-hf-id="hf-7u3a" id="scene-03-worlds-io-shot" class="clip scene-03-worlds-shot" data-start="5" data-duration="1" data-track-index="0">
+      <div data-hf-id="hf-3q2h" id="scene-03-worlds-io-photo" data-layout-allow-overflow class="scene-03-worlds-photo"><img data-hf-id="hf-gyta" id="scene-03-worlds-io-image" class="scene-03-worlds-image" src="/assets/world-io.jpg" alt="Actual Io landscape in Lunacrust"></div>
+      <figcaption data-hf-id="hf-n2yx" class="scene-03-worlds-label"><span data-hf-id="hf-wwj4" class="scene-03-worlds-name">IO</span><span data-hf-id="hf-1hv8" class="scene-03-worlds-index">06 / 08</span></figcaption>
+    </figure>
+    <figure data-hf-id="hf-4zu7" id="scene-03-worlds-titan-shot" class="clip scene-03-worlds-shot" data-start="6" data-duration="1" data-track-index="0">
+      <div data-hf-id="hf-xxqf" id="scene-03-worlds-titan-photo" data-layout-allow-overflow class="scene-03-worlds-photo"><img data-hf-id="hf-ajnw" id="scene-03-worlds-titan-image" class="scene-03-worlds-image" src="/assets/world-titan.jpg" alt="Actual Titan landscape in Lunacrust"></div>
+      <figcaption data-hf-id="hf-o9w0" class="scene-03-worlds-label"><span data-hf-id="hf-i3dy" class="scene-03-worlds-name">TITAN</span><span data-hf-id="hf-586l" class="scene-03-worlds-index">07 / 08</span></figcaption>
+    </figure>
+    <figure data-hf-id="hf-tzuf" id="scene-03-worlds-jupiter-shot" class="clip scene-03-worlds-shot" data-start="7" data-duration="1" data-track-index="0">
+      <div data-hf-id="hf-7lxu" id="scene-03-worlds-jupiter-photo" data-layout-allow-overflow class="scene-03-worlds-photo"><img data-hf-id="hf-822h" id="scene-03-worlds-jupiter-image" class="scene-03-worlds-image" src="/assets/world-jupiter.jpg" alt="Actual Jupiter landscape in Lunacrust"></div>
+      <figcaption data-hf-id="hf-nvkz" class="scene-03-worlds-label"><span data-hf-id="hf-6ls5" class="scene-03-worlds-name">JUPITER</span><span data-hf-id="hf-tr4a" class="scene-03-worlds-index">08 / 08</span></figcaption>
+    </figure>
+    <h1 data-hf-id="hf-6lnh" class="scene-03-worlds-heading">8 WORLDS.</h1>
+  </div>
+  <script src="/assets/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="scene-03-worlds"]');
+      const route = ['earth', 'moon', 'mars', 'venus', 'europa', 'io', 'titan', 'jupiter'];
+      const timeline = gsap.timeline({ paused: true });
+      // Only the inner photograph wrapper moves. Shot windows and readable
+      // labels stay fixed, with eight exact one-second cuts and no color grade.
+      route.forEach((world, index) => {
+        const photo = root.querySelector('[id="scene-03-worlds-' + world + '-photo"]');
+        timeline.fromTo(photo, { scale: 1.02 }, { scale: 1.07, duration: 1, ease: 'none' }, index);
+      });
+      window.__timelines = window.__timelines || {};
+      window.__timelines['scene-03-worlds'] = timeline;
+    })();
+  </script>
+</template>

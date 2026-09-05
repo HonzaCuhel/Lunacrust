@@ -1,0 +1,190 @@
+<template>
+  <!-- Display caps use tight lines; glyphs are separated in verified screenshots. -->
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/SpaceGrotesk.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: block;
+    }
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Space Grotesk";
+      color: #f1f3e9;
+    }
+    #root * { box-sizing: border-box; }
+    [id="scene-04-expedition-ground"] {
+      position: absolute;
+      inset: 0;
+      background: #101715;
+    }
+    [id="scene-04-expedition-campaign-media"],
+    [id="scene-04-expedition-creatures-media"] {
+      position: absolute;
+      left: 30cqw;
+      top: 4.95cqw;
+      width: 66.7cqw;
+      height: 40cqw;
+      overflow: hidden;
+      border: 0.21cqw solid #2a2a2a;
+    }
+    [id="scene-04-expedition-campaign-picture"],
+    [id="scene-04-expedition-creatures-picture"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    [id="scene-04-expedition-campaign-image"] {
+      position: absolute;
+      width: 117cqw;
+      height: 73.125cqw;
+      max-width: none;
+      left: -25.72cqw;
+      top: -9.5cqw;
+    }
+    [id="scene-04-expedition-creatures-image"] {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 48%;
+    }
+    [id="scene-04-expedition-copy1"],
+    [id="scene-04-expedition-copy2"] {
+      position: absolute;
+      left: 3.3cqw;
+      top: 8.3cqw;
+      width: 23.4cqw;
+      height: 35.4cqw;
+      background: #101715;
+    }
+    [class~="scene-04-expedition-kicker"] {
+      margin: 0 0 3.65cqw;
+      color: #80b4dc;
+      font-size: 1.4cqw;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    [class~="scene-04-expedition-heading"] {
+      margin: 0;
+      font-size: 4.95cqw;
+      line-height: 0.96;
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      text-transform: uppercase;
+    }
+    [class~="scene-04-expedition-heading"] span { display: block; }
+    [class~="scene-04-expedition-accent"] { color: #d6ef8c; }
+    [class~="scene-04-expedition-secondary"] {
+      margin: 2.05cqw 0 0;
+      max-width: 23cqw;
+      font-size: 1.58cqw;
+      line-height: 1.35;
+      font-weight: 400;
+      color: #f1f3e9;
+    }
+    [id="scene-04-expedition-context1"],
+    [id="scene-04-expedition-context2"] {
+      position: absolute;
+      top: 2.55cqw;
+      left: 30cqw;
+      font-size: 1.4cqw;
+      line-height: 1;
+      letter-spacing: 0.06em;
+      color: #f1f3e9;
+      font-weight: 500;
+    }
+    [id="scene-04-expedition-crew-panel"] {
+      position: absolute;
+      left: 3.3cqw;
+      top: 27.3cqw;
+      width: 58cqw;
+      height: 17.6cqw;
+      padding: 1.75cqw 2.15cqw;
+      background: #101715;
+      border-left: 0.42cqw solid #d6ef8c;
+    }
+    [id="scene-04-expedition-crew-heading"] {
+      font-size: 4.95cqw;
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+    }
+    [id="scene-04-expedition-crew-secondary"] {
+      max-width: 52cqw;
+      margin-top: 1.35cqw;
+      font-size: 1.58cqw;
+    }
+  </style>
+
+  <div data-hf-id="hf-yv0r" id="root" data-composition-id="scene-04-expedition" data-duration="8" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-bs3k" id="scene-04-expedition-ground" class="clip" data-start="0" data-duration="5.3" data-track-index="0"></div>
+
+    <div data-hf-id="hf-98nd" id="scene-04-expedition-campaign-media" class="clip" data-start="0" data-duration="2.7" data-track-index="2">
+      <div data-hf-id="hf-l6y7" id="scene-04-expedition-campaign-picture">
+        <img data-layout-allow-overflow data-hf-id="hf-46vx" id="scene-04-expedition-campaign-image" src="assets/campaign.png" alt="Actual Lunacrust survival campaign mission journal, cropped to its objectives and relay progress">
+      </div>
+    </div>
+    <div data-hf-id="hf-3glc" id="scene-04-expedition-context1" class="clip" data-start="0" data-duration="2.7" data-track-index="3">IN-GAME MISSION JOURNAL</div>
+    <div data-hf-id="hf-1qs2" id="scene-04-expedition-copy1" class="clip" data-start="0" data-duration="2.7" data-track-index="4">
+      <p data-hf-id="hf-hbfi" id="scene-04-expedition-kicker1" class="scene-04-expedition-kicker">SURVIVAL CAMPAIGN</p>
+      <h2 data-hf-id="hf-3ar8" id="scene-04-expedition-heading1" class="scene-04-expedition-heading"><span data-layout-allow-overlap data-hf-id="hf-yvxo">FOLLOW</span><span data-layout-allow-overlap data-hf-id="hf-k5r4">THE</span><span data-layout-allow-overlap data-hf-id="hf-ttnc" class="scene-04-expedition-accent">SIGNAL.</span></h2>
+      <p data-hf-id="hf-r53c" id="scene-04-expedition-secondary1" class="scene-04-expedition-secondary">A survival campaign<br data-hf-id="hf-x5px">across eight worlds.</p>
+    </div>
+
+    <div data-hf-id="hf-f6ml" id="scene-04-expedition-creatures-media" class="clip" data-start="2.7" data-duration="2.6" data-track-index="2">
+      <div data-hf-id="hf-uaon" id="scene-04-expedition-creatures-picture">
+        <img data-layout-allow-overflow data-hf-id="hf-low8" id="scene-04-expedition-creatures-image" src="assets/creatures.png" alt="Actual Lunacrust gameplay showing two alien creatures in a Martian cavern">
+      </div>
+    </div>
+    <div data-hf-id="hf-9jn0" id="scene-04-expedition-context2" class="clip" data-start="2.7" data-duration="2.6" data-track-index="3">IN-GAME CREATURES · MARS</div>
+    <div data-hf-id="hf-j2x9" id="scene-04-expedition-copy2" class="clip" data-start="2.7" data-duration="2.6" data-track-index="4">
+      <p data-hf-id="hf-qoru" id="scene-04-expedition-kicker2" class="scene-04-expedition-kicker">BUILD &amp; EXPLORE</p>
+      <h2 data-hf-id="hf-byn3" id="scene-04-expedition-heading2" class="scene-04-expedition-heading"><span data-layout-allow-overlap data-hf-id="hf-eug4">MAKE IT</span><span data-layout-allow-overlap data-hf-id="hf-724g" class="scene-04-expedition-accent">YOURS.</span></h2>
+      <p data-hf-id="hf-rpvb" id="scene-04-expedition-secondary2" class="scene-04-expedition-secondary">Build freely.<br data-hf-id="hf-rsrt">Save named checkpoints.</p>
+    </div>
+
+    <!-- approved frame video hoisted by assemble-index -->
+    <div data-hf-id="hf-dvx0" id="scene-04-expedition-crew-panel" class="clip" data-start="5.3" data-duration="2.7" data-track-index="4">
+      <h2 data-hf-id="hf-0cz5" id="scene-04-expedition-crew-heading" class="scene-04-expedition-heading"><span data-layout-allow-overlap data-hf-id="hf-k2jm">BRING YOUR</span><span data-layout-allow-overlap data-hf-id="hf-azdb" class="scene-04-expedition-accent">CREW.</span></h2>
+      <p data-hf-id="hf-5o39" id="scene-04-expedition-crew-secondary" class="scene-04-expedition-secondary">Desktop LAN · up to 8 players</p>
+    </div>
+  </div>
+
+  <script src="assets/gsap.min.js"></script>
+  <script>
+    (() => {
+      const select = (name) => document.getElementById(`scene-04-expedition-${name}`);
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo(select("campaign-picture"), { x: 60 }, { x: 0, duration: 0.42, ease: "power4.out" }, 0);
+      tl.fromTo(select("heading1"), { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 0.05);
+      tl.fromTo(select("kicker1"), { opacity: 0 }, { opacity: 1, duration: 0.25 }, 0.08);
+      tl.fromTo(select("secondary1"), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" }, 0.55);
+      tl.fromTo(select("campaign-image"), { scale: 1 }, { scale: 1.025, duration: 2.7, ease: "none" }, 0);
+
+      // Matched leftward movement joins the internal campaign / creature seam.
+      tl.to([select("campaign-picture"), select("heading1"), select("secondary1")], { x: -90, duration: 0.3, ease: "power4.in" }, 2.4);
+      tl.to([select("heading1"), select("secondary1")], { opacity: 0, duration: 0.18, ease: "power1.in" }, 2.52);
+      tl.fromTo(select("creatures-picture"), { x: 90 }, { x: 0, duration: 0.3, ease: "power4.out" }, 2.7);
+      tl.fromTo(select("heading2"), { x: 90, opacity: 0.35 }, { x: 0, opacity: 1, duration: 0.3, ease: "power4.out" }, 2.7);
+      tl.fromTo(select("kicker2"), { opacity: 0 }, { opacity: 1, duration: 0.25 }, 2.7);
+      tl.fromTo(select("secondary2"), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" }, 3.25);
+      tl.fromTo(select("creatures-image"), { scale: 1.015 }, { scale: 1.065, duration: 2.6, ease: "none" }, 2.7);
+
+      // The final scene's ground stays transparent for the hoisted Jupiter clip.
+      tl.to([select("creatures-picture"), select("heading2"), select("secondary2")], { x: -90, duration: 0.3, ease: "power4.in" }, 5);
+      tl.to([select("heading2"), select("secondary2")], { opacity: 0, duration: 0.18, ease: "power1.in" }, 5.12);
+      tl.fromTo(select("crew-panel"), { x: 90 }, { x: 0, duration: 0.3, ease: "power4.out" }, 5.3);
+      tl.fromTo(select("crew-heading"), { opacity: 0.35 }, { opacity: 1, duration: 0.3, ease: "power4.out" }, 5.3);
+      tl.fromTo(select("crew-secondary"), { y: 15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 6.1);
+      tl.to(select("crew-heading"), { x: 7, duration: 1.9, ease: "none" }, 6.1);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["scene-04-expedition"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,108 @@
+<template>
+  <!-- Tight display line boxes overlap; glyphs remain separate, verified at held frames. -->
+  <style>
+    @font-face {
+      font-family: 'Space Grotesk';
+      src: url('/assets/SpaceGrotesk.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 300 700;
+      font-display: block;
+    }
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #d6ef8c;
+      font-family: 'Space Grotesk';
+    }
+    [class~="scene-02-departure-footage"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    [class~="scene-02-departure-panel"] {
+      position: absolute;
+      left: 5cqw;
+      bottom: 19.5cqh;
+      box-sizing: border-box;
+      padding: 1.45cqw 1.75cqw 1.35cqw;
+      background: #101715;
+      pointer-events: none;
+    }
+    [class~="scene-02-departure-earth"] { width: 66cqw; }
+    [class~="scene-02-departure-mars"] { width: 58cqw; }
+    [class~="scene-02-departure-world"] {
+      margin: 0 0 1.08cqw;
+      color: #f1f3e9;
+      font-size: 1.46cqw;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    [class~="scene-02-departure-title"] {
+      margin: 0;
+      font-weight: 700;
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+    [class~="scene-02-departure-earth-title"] { font-size: 6.0416667cqw; }
+    [class~="scene-02-departure-mars-title"] { font-size: 7.8125cqw; }
+    [class~="scene-02-departure-line"] {
+      display: block;
+      white-space: nowrap;
+    }
+    [class~="scene-02-departure-word-mask"] {
+      display: inline-block;
+      vertical-align: top;
+      overflow: hidden;
+      padding: 0.08cqw 0.16cqw 0.22cqw 0;
+    }
+    [class~="scene-02-departure-word"] { display: inline-block; }
+  </style>
+  <div data-hf-id="hf-da0f" id="root" data-composition-id="scene-02-departure" data-duration="7" data-width="1920" data-height="1080">
+    <!-- approved frame video hoisted by assemble-index -->
+    <!-- approved frame video hoisted by assemble-index -->
+    <section data-hf-id="hf-yjvq" class="scene-02-departure-panel scene-02-departure-earth">
+      <p data-hf-id="hf-kqev" class="scene-02-departure-world">EARTH</p>
+      <h1 data-hf-id="hf-2buh" class="scene-02-departure-title scene-02-departure-earth-title">
+        <span data-hf-id="hf-bjeb" class="scene-02-departure-line"><span data-hf-id="hf-18je" class="scene-02-departure-word-mask"><span data-hf-id="hf-f6t4" data-layout-allow-overlap data-layout-allow-overflow class="scene-02-departure-word">LEAVE</span></span></span>
+        <span data-hf-id="hf-5bgz" class="scene-02-departure-line"><span data-hf-id="hf-cqou" class="scene-02-departure-word-mask"><span data-hf-id="hf-y83q" data-layout-allow-overlap data-layout-allow-overflow class="scene-02-departure-word">FAMILIAR</span></span> <span data-hf-id="hf-d4zv" class="scene-02-departure-word-mask"><span data-hf-id="hf-un9k" data-layout-allow-overlap data-layout-allow-overflow class="scene-02-departure-word">GROUND.</span></span></span>
+      </h1>
+    </section>
+    <section data-hf-id="hf-n3tx" class="scene-02-departure-panel scene-02-departure-mars">
+      <p data-hf-id="hf-g2nc" class="scene-02-departure-world">MARS</p>
+      <h2 data-hf-id="hf-87hr" class="scene-02-departure-title scene-02-departure-mars-title">
+        <span data-hf-id="hf-4x5y" class="scene-02-departure-line"><span data-hf-id="hf-djaw" class="scene-02-departure-word-mask"><span data-hf-id="hf-ap8z" data-layout-allow-overlap data-layout-allow-overflow class="scene-02-departure-word">GO</span></span> <span data-hf-id="hf-ar5p" class="scene-02-departure-word-mask"><span data-hf-id="hf-72f1" data-layout-allow-overlap data-layout-allow-overflow class="scene-02-departure-word">FURTHER.</span></span></span>
+      </h2>
+    </section>
+  </div>
+  <script src="/assets/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="scene-02-departure"]');
+      const earth = root.querySelector('[class~="scene-02-departure-earth"]');
+      const mars = root.querySelector('[class~="scene-02-departure-mars"]');
+      const earthWords = earth.querySelectorAll('[class~="scene-02-departure-word"]');
+      const marsWords = mars.querySelectorAll('[class~="scene-02-departure-word"]');
+      const timeline = gsap.timeline({ paused: true });
+      // These are typography changes inside this shot. The two approved video
+      // windows meet exactly at 3.5 s, without a transition or black interval.
+      timeline.set(earth, { autoAlpha: 1 }, 0);
+      timeline.fromTo(mars, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0, ease: 'none' }, 3.5);
+      timeline.set(earth, { autoAlpha: 0 }, 3.5);
+      timeline.fromTo(earthWords,
+        { yPercent: 112 }, { yPercent: 0, duration: 0.42, stagger: 0.12, ease: 'power3.out' }, 0.3);
+      timeline.fromTo(marsWords,
+        { yPercent: 112 }, { yPercent: 0, duration: 0.42, stagger: 0.12, ease: 'power3.out' }, 3.7);
+      timeline.to({}, { duration: 7 }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['scene-02-departure'] = timeline;
+    })();
+  </script>
+</template>

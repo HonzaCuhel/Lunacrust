@@ -1,12 +1,18 @@
 # Lunacrust
 
-**An expedition of your own.** An open-source desktop voxel sandbox across eight Solar System worlds. Mine a shelter, build a base, craft life support and face strange creatures together with friends on the same Wi-Fi.
+**Eight worlds. One last signal.** An open-source voxel adventure across the Solar System. Follow a survival campaign from Earth to Jupiter, build freely in Creative, and explore together over desktop LAN.
 
-![Lunacrust expedition selection](docs/menu.png)
+[![Watch the Lunacrust trailer — actual in-engine footage](site/assets/trailer-preview.gif)](https://honzacuhel.github.io/Lunacrust/#trailer)
+
+**[Play the browser demo](https://honzacuhel.github.io/Lunacrust/demo/) · [Explore the worlds](https://honzacuhel.github.io/Lunacrust/) · [Watch / download the trailer](https://honzacuhel.github.io/Lunacrust/assets/lunacrust-trailer.mp4)**
+
+The browser demo is single-player and needs a keyboard, mouse/trackpad and WebGL2. Desktop LAN supports up to eight players. No account required.
+
+> **Release candidate 1.1, ready for beta testing.** Desktop packages have passed native CI, but macOS/Windows installers are unsigned and the GitHub releases are still drafts. A stable public download has not been published. Physical two-computer Wi-Fi and a complete organic survival playthrough remain to be verified. [Read the evidence and open issues](docs/RELEASE_STATUS.md).
 
 ## Play
 
-The 1.1 release adds The Last Signal campaign, named checkpoints and Shift sprint. Download and verification details are recorded in [release status](docs/RELEASE_STATUS.md). Choose the package for your computer:
+The 1.1 candidate adds The Last Signal campaign, named checkpoints and Shift sprint. The packages below are prepared; public download publication is pending. Download and verification details are recorded in [release status](docs/RELEASE_STATUS.md). Choose the package for your computer:
 
 | Computer | Package | Install |
 | --- | --- | --- |
@@ -113,3 +119,19 @@ Game code and original generated assets are available under the [MIT license](LI
 Lunacrust is independent and is not affiliated with Mojang or Microsoft. The source audit reduces identifiable copying/provenance risks; it is not a trademark clearance or a guarantee against legal claims. See the provenance document for what was checked and the limits of the evidence.
 
 Bug reports should include OS, game version, mode, planet, reproducible steps and a save copy when appropriate. Do not include private data or credentials. See [contributing](CONTRIBUTING.md).
+
+## Trailer and demo website
+
+The [35-second HyperFrames trailer source](videos/lunacrust-promo/README.md) includes real gameplay captures, original synthesized music and editable scenes. [Production brief](videos/lunacrust-promo/BRIEF.md) · [Storyboard](videos/lunacrust-promo/STORYBOARD.md).
+
+The website ships the actual browser game, local fonts and local audio; it has no analytics, external scripts or sign-in. To preview it:
+
+```sh
+npm ci
+node tools/build-site.mjs
+node tools/serve-site.mjs
+# Open http://127.0.0.1:5180
+node tools/check-site.mjs
+```
+
+See [demo publishing](docs/DEMO_SITE.md) for the reproducible GitHub Pages workflow.

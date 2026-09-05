@@ -1,0 +1,138 @@
+<template>
+  <style>
+    @font-face {
+      font-family: 'Space Grotesk';
+      src: url('/assets/SpaceGrotesk.ttf') format('truetype');
+      font-weight: 300 700;
+      font-style: normal;
+      font-display: block;
+    }
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: 'Space Grotesk';
+      color: #d6ef8c;
+    }
+    .scene-01-signal-ground {
+      position: absolute;
+      inset: 0;
+      background: #101715;
+    }
+    .scene-01-signal-footage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .scene-01-signal-copy {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .scene-01-signal-eyebrow {
+      position: absolute;
+      left: 5cqw;
+      top: 6.5cqh;
+      margin: 0;
+      padding: 0.52cqw 0.68cqw;
+      background: #101715;
+      font-size: 1.46cqw;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: 0.12em;
+    }
+    .scene-01-signal-title {
+      position: absolute;
+      left: 5cqw;
+      top: 32cqh;
+      margin: 0;
+      font-size: 7.8125cqw;
+      font-weight: 700;
+      line-height: 0.96;
+      letter-spacing: -0.045em;
+      text-transform: uppercase;
+      -webkit-text-stroke: 0.08cqw #101715;
+      paint-order: stroke fill;
+    }
+    .scene-01-signal-mask {
+      display: block;
+      overflow: hidden;
+      padding: 0.2cqw 0.3cqw 0.35cqw 0;
+    }
+    .scene-01-signal-line {
+      display: block;
+      white-space: nowrap;
+    }
+    .scene-01-signal-pulses {
+      position: absolute;
+      left: 5cqw;
+      top: 63.8cqh;
+      display: flex;
+      gap: 0.72cqw;
+      height: 0.26cqw;
+    }
+    .scene-01-signal-pulse {
+      display: block;
+      width: 2.2cqw;
+      height: 100%;
+      background: #d6ef8c;
+      transform-origin: left center;
+    }
+    .scene-01-signal-footer {
+      position: absolute;
+      top: 77.3cqh;
+      left: 5cqw;
+      margin: 0;
+      padding: 0.52cqw 0.68cqw;
+      background: #101715;
+      color: #f1f3e9;
+      font-size: 1.4cqw;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+  </style>
+  <div data-hf-id="hf-a4gy" id="root" data-composition-id="scene-01-signal" data-duration="5" data-width="1920" data-height="1080">
+    <!-- approved frame video hoisted by assemble-index -->
+    <div data-hf-id="hf-zkdg" class="scene-01-signal-copy">
+      <p data-hf-id="hf-n4pb" class="scene-01-signal-eyebrow">INCOMING TRANSMISSION</p>
+      <h1 data-hf-id="hf-j45l" class="scene-01-signal-title">
+        <span data-hf-id="hf-3wse" class="scene-01-signal-mask"><span data-hf-id="hf-v2md" data-layout-allow-overflow class="scene-01-signal-line">A SIGNAL</span></span>
+        <span data-hf-id="hf-fq1u" class="scene-01-signal-mask"><span data-hf-id="hf-bdjf" data-layout-allow-overflow class="scene-01-signal-line">IS WAITING.</span></span>
+      </h1>
+      <div data-hf-id="hf-kcak" class="scene-01-signal-pulses" aria-hidden="true">
+        <i data-hf-id="hf-bqhi" class="scene-01-signal-pulse"></i><i data-hf-id="hf-rzy2" class="scene-01-signal-pulse"></i><i data-hf-id="hf-se93" class="scene-01-signal-pulse"></i><i data-hf-id="hf-ssk4" class="scene-01-signal-pulse"></i>
+      </div>
+      <p data-hf-id="hf-97ep" class="scene-01-signal-footer">ACTUAL IN-ENGINE FOOTAGE · CREATIVE CAMERA</p>
+    </div>
+  </div>
+  <script src="/assets/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="scene-01-signal"]');
+      const lines = root.querySelectorAll('[class="scene-01-signal-line"]');
+      const pulses = root.querySelectorAll('[class="scene-01-signal-pulse"]');
+      const timeline = gsap.timeline({ paused: true });
+      timeline.fromTo(root.querySelector('[class="scene-01-signal-eyebrow"]'),
+        { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, 0.05);
+      timeline.fromTo(lines[0],
+        { yPercent: 115 }, { yPercent: 0, duration: 0.5, ease: 'power3.out' }, 0.35);
+      timeline.fromTo(lines[1],
+        { yPercent: 115 }, { yPercent: 0, duration: 0.55, ease: 'power3.out' }, 0.86);
+      timeline.fromTo(pulses,
+        { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.24, stagger: 0.12, ease: 'power2.out' }, 1.35);
+      timeline.fromTo(root.querySelector('[class="scene-01-signal-footer"]'),
+        { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 2.25);
+      // The packet deliberately calls for a quiet hold; real camera footage
+      // continues underneath the settled typography through the cut at 5 s.
+      timeline.to({}, { duration: 5 }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['scene-01-signal'] = timeline;
+    })();
+  </script>
+</template>
