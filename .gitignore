@@ -5,3 +5,13 @@ artifacts/
 progress.md
 *.log
 .DS_Store
+
+# HyperFrames generated diagnostics and local render cache
+videos/**/renders/
+videos/**/snapshots/
+videos/**/.hyperframes/
+videos/**/compositions/components/
+videos/**/.media/
+site/assets/work-*/
+videos/**/.thumbnails/
+videos/**/.waveform-cache/

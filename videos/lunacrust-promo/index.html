@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #f1f3e9;
+      }
+      #root > video.clip { z-index: 0; }
+      .scene {
+        z-index: 1;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-d8fi" id="root" data-composition-id="main" data-start="0" data-duration="35" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-up5x" id="el-scene-01-signal" class="scene" data-composition-id="scene-01-signal" data-composition-src="compositions/frames/01-signal.html" data-start="0" data-duration="5" data-track-index="1"></div>
+
+      <div data-hf-id="hf-uuxr" id="el-scene-02-departure" class="scene" data-composition-id="scene-02-departure" data-composition-src="compositions/frames/02-departure.html" data-start="5" data-duration="7" data-track-index="1"></div>
+
+      <div data-hf-id="hf-1nh6" id="el-scene-03-worlds" class="scene" data-composition-id="scene-03-worlds" data-composition-src="compositions/frames/03-worlds.html" data-start="12" data-duration="8" data-track-index="1"></div>
+
+      <div data-hf-id="hf-v3i2" id="el-scene-04-expedition" class="scene" data-composition-id="scene-04-expedition" data-composition-src="compositions/frames/04-expedition.html" data-start="20" data-duration="8" data-track-index="1"></div>
+
+      <div data-hf-id="hf-w66b" id="el-scene-05-lockup" class="scene" data-composition-id="scene-05-lockup" data-composition-src="compositions/frames/05-lockup.html" data-start="28" data-duration="7" data-track-index="1"></div>
+
+      <video data-hf-id="hf-kmgh" id="scene-01-signal-footage" src="/assets/europa.mp4" preload="auto" aria-label="Actual Europa landscape captured in Lunacrust" muted playsinline class="clip" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;object-fit:cover" data-start="0" data-duration="5" data-track-index="1001"></video>
+
+      <video data-hf-id="hf-ruk7" id="scene-02-departure-earth-video" src="/assets/earth.mp4" preload="auto" aria-label="Actual Earth landscape captured in Lunacrust" muted playsinline class="clip" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;object-fit:cover" data-start="5" data-duration="3.5" data-track-index="2000"></video>
+
+      <video data-hf-id="hf-4hty" id="scene-02-departure-mars-video" src="/assets/mars.mp4" preload="auto" aria-label="Actual Mars landscape captured in Lunacrust" muted playsinline class="clip" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;object-fit:cover" data-start="8.5" data-duration="3.5" data-track-index="2000"></video>
+
+      <video data-hf-id="hf-ckm3" id="scene-04-expedition-jupiter-video" src="assets/jupiter.mp4" preload="auto" data-media-start="0" muted playsinline class="clip" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;object-fit:cover" data-start="25.3" data-duration="2.7" data-track-index="4001"></video>
+
+      <!-- BGM -->
+      <audio data-hf-id="hf-u1nq" id="el-bgm" src="assets/score.wav" data-start="0" data-duration="35" data-track-index="11" data-volume="1"></audio>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

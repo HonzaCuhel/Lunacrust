@@ -18,6 +18,25 @@ import { PROTOCOL, contentHash } from './net/protocol.js';
 import { PLANET_BY_ID } from './planets.js';
 import * as store from './storage.js';
 import { normalizeSettings, DEFAULT_SETTINGS } from './settings.js';
+import { createCampaign, canVisit, stageFor, requirementsFor, repairRelay, nextDestination } from './campaign.js';
+import { validateCampaignSave, captureCampaign, travelSave } from './campaign-save.js';
+import * as checkpoints from './checkpoints.js';
+import { ExpeditionUI } from './expedition-ui.js';
+
+let campaignRun = null;
+let campaignActive = false;
+let campaignReadError = false;
+let mutationBusy = false;
+let readyWaiter = null;
+let joiningReject = null;
+let saveTail = Promise.resolve();
+const clone = value => structuredClone(value);
+function writeSave(id, snapshot) {
+  const captured = clone(snapshot);
+  const next = saveTail.catch(() => {}).then(() => store.saveWorld(id, captured));
+  saveTail = next;
+  return next;
+}
 
 const el = (id) => document.getElementById(id);
 const panels = {
@@ -61,7 +80,7 @@ const game = new Game(el('game'), {
   onArmourHit: () => flashVisorHit(),
   onPeer: (kind, who) => { toast(kind === 'join' ? `${who} joined` : `${who} left`, 2600); paintRoster(); },
   onChat: (id, text) => { paintRoster(); roster?.addChatLine?.(id, text); },
-  onNetDisconnect: (reason) => { void leaveSession(reason ?? 'Host closed the game'); },
+  onNetDisconnect: (reason) => { if (joiningReject) { joiningReject(new Error(reason ?? 'Host closed the game')); return; } void leaveSession(reason ?? 'Host closed the game'); },
 });
 
 // ---------------------------------------------------------------------- LAN
@@ -90,6 +109,7 @@ function buildLanMenu() {
 /** Open the world you are already playing to the network. */
 async function hostLan() {
   if (!lanAvailable()) return toast('LAN play needs the desktop build');
+  if (launchInProgress || mutationBusy) return toast('Wait for the current operation to finish.');
   // Stop listening for other people's games while we run one: a host cannot join
   // itself, and on one machine two browsers bound to the same UDP port fight
   // over every beacon - the kernel hands each datagram to exactly one of them.
@@ -108,43 +128,43 @@ async function hostLan() {
 /** Join a discovered (or hand-typed) host. Bypasses planet selection. */
 async function joinLan(target) {
   if (!lanAvailable()) return toast('LAN play needs the desktop build');
+  if (launchInProgress || mutationBusy || state.screen !== 'menu') return toast('Return to orbit and finish the current operation before joining.');
+  launchInProgress = true;
   toast(`Connecting to ${target.address}:${target.port}…`, 3000);
-  game.guestWorld = true;
+  campaignActive = false; game.guestWorld = true;
+  let resolveLanding, rejectLanding, timer;
+  const landing = new Promise((resolve, reject) => { resolveLanding = resolve; rejectLanding = reject; });
+  joiningReject = rejectLanding;
   const session = game.startGuestSession(async (w) => {
-    const planet = PLANET_BY_ID.get(w.planetId) ?? PLANETS[0];
-    const away = await store.loadGuest(w.worldUid ?? `${w.planetId}-${w.seed >>> 0}`);
-    show('loading');
-    game.applySettings(state.settings);
-    audio.resume();
-    audio.setVolume(state.settings.volume);
-    el('loading-title').textContent = `Joining ${w.hostName ?? 'a game'} on ${planet.name}`;
-    await game.enter(planet, {
-      seed: w.seed, mode: w.mode, time: w.time, edits: w.edits,
-      stations: w.stations, drops: w.drops, worldUid: w.worldUid,
-      player: away?.player, inventory: away?.inventory, survival: away?.survival,
-      armour: away?.armour, hotbar: away?.hotbar,
-    }, { keepNet: true });
-    music.start();
-    paintRoster();
+    try {
+      const planet = PLANET_BY_ID.get(w.planetId);
+      if (!planet) throw new Error('Host selected an unknown destination.');
+      const away = await store.loadGuest(w.worldUid ?? `${w.planetId}-${w.seed >>> 0}`);
+      if (game.net !== session) return;
+      audio.resume(); audio.setVolume(state.settings.volume);
+      await enterWorld(planet, {
+        seed: w.seed, mode: w.mode, time: w.time, edits: w.edits,
+        stations: w.stations, drops: w.drops, worldUid: w.worldUid,
+        player: away?.player, inventory: away?.inventory, survival: away?.survival,
+        armour: away?.armour, hotbar: away?.hotbar,
+      }, { keepNet: true });
+      if (game.net !== session) return;
+      music.start(); onWorldReady(); paintRoster(); resolveLanding();
+    } catch (error) { rejectLanding(error); throw error; }
   });
-  // lan.js sends this frame the instant the socket opens, and the host answers
-  // with `welcome` - which is what resolves the join.
-  const res = await globalThis.spaceAPI.net.join({
-    address: target.address ?? target.host ?? '127.0.0.1',
-    port: target.port,
-    hello: {
-      t: 'hello',
-      proto: PROTOCOL,
-      hash: contentHash(),
-      name: state.settings.playerName ?? 'Explorer',
-      code: target.code ?? null,
-    },
-  });
-  if (!res?.ok) {
-    game.stopLan();
-    toast(`Join failed: ${res?.error ?? 'no answer'} — broadcast is often blocked on guest wifi, try Direct connect`, 6000);
-  }
-  return session;
+  try {
+    timer = setTimeout(() => rejectLanding(new Error('Connection timed out')), 75000);
+    await Promise.all([landing, globalThis.spaceAPI.net.join({
+      address: target.address ?? target.host ?? '127.0.0.1', port: target.port,
+      hello: { t: 'hello', proto: PROTOCOL, hash: contentHash(), name: state.settings.playerName ?? 'Explorer', code: target.code ?? null },
+    }).then(result => { if (!result?.ok) throw new Error(result?.error ?? 'No answer'); })]);
+    return session;
+  } catch (error) {
+    game.dispose(false); game.guestWorld = false; stopAutosave(); music.stop(); audio.stopAmbience();
+    show('menu'); paintRoster();
+    toast(`Join failed: ${error.message}. Check the host address and private Wi-Fi connection.`, 6500);
+    return null;
+  } finally { clearTimeout(timer); joiningReject = null; launchInProgress = false; }
 }
 
 /** The player list inside the pause panel. */
@@ -218,14 +238,19 @@ function buildMenu() {
         <span>${planet.temperature}</span>
       </div>
     `);
-    if (state.saves.has(planet.id)) {
+    const locked = state.mode === 'survival' && !canVisit(campaignRun?.campaign, planet.id);
+    card.disabled = locked;
+    card.classList.toggle('locked', locked);
+    if (locked) card.insertAdjacentHTML('beforeend', '<span class="badge-save">LOCKED</span>');
+    else if (state.mode === 'survival' && campaignRun?.campaign.repaired.includes(planet.id)) card.insertAdjacentHTML('beforeend', '<span class="badge-save">RESTORED</span>');
+    else if (state.mode === 'creative' && state.saves.has(planet.id)) {
       card.insertAdjacentHTML('beforeend', '<span class="badge-save">SAVED</span>');
     }
 
     card.addEventListener('click', () => selectPlanet(planet.id));
     // Double-click is a shortcut for the button the player would have pressed:
     // Continue when there is a save, Land when there is not.
-    card.addEventListener('dblclick', () => land(state.saves.has(planet.id)));
+    card.addEventListener('dblclick', () => land(state.mode === 'survival' ? !!campaignRun : state.saves.has(planet.id)));
     grid.appendChild(card);
     card._canvas = canvas;
     card._planet = planet;
@@ -234,6 +259,7 @@ function buildMenu() {
 
 function selectPlanet(id) {
   state.selected = PLANETS.find((p) => p.id === id);
+  if (!state.selected) return;
   audio.resume();
   audio.ui(true);
   for (const c of document.querySelectorAll('.card')) { c.classList.toggle('selected', c.dataset.id === id); c.setAttribute('aria-pressed', String(c.dataset.id === id)); }
@@ -246,8 +272,19 @@ function selectPlanet(id) {
     <span class="stat">day <b>${Math.round(p.dayLength / 60)} min</b></span>
     <span class="stat">surface <b>${p.temperature}</b></span>
     <span class="stat warn">${p.hazard}</span>`;
-  el('btn-land').disabled = false;
-  el('btn-continue').hidden = !state.saves.has(p.id);
+  const survival = state.mode === 'survival';
+  const unlocked = !survival || canVisit(campaignRun?.campaign, p.id);
+  el('btn-land').disabled = !unlocked;
+  el('btn-land').textContent = survival && campaignRun ? 'New campaign' : survival ? 'Begin on Earth ↗' : 'Begin expedition ↗';
+  el('btn-continue').hidden = survival ? !campaignRun || !unlocked : !state.saves.has(p.id);
+  el('btn-continue').textContent = survival && campaignRun && p.id !== campaignRun.campaign.activePlanet ? `Travel to ${p.name}` : 'Continue';
+  const chapter = stageFor(p.id);
+  if (survival) {
+    el('launch-sub').textContent = unlocked ? chapter.title : `${chapter.title} · restore the preceding relay to unlock`;
+    el('campaign-intro').textContent = campaignRun?.campaign.completed ? 'THE LAST SIGNAL · CAMPAIGN COMPLETE' : `THE LAST SIGNAL · ${campaignRun?.campaign.repaired.length ?? 0} / 8 RELAYS RESTORED`;
+  }
+  el('campaign-intro').hidden = !survival;
+  el('expedition-note').textContent = survival ? 'A lost convoy. Eight silent relays. Bring their voices home.' : 'Every world is yours. Unlimited materials and suit flight.';
   drawPlanetOrb(el('launch-orb').getContext('2d'), p, 480, menuT);
 }
 
@@ -276,6 +313,7 @@ function buildModeToggle() {
     store.saveSettings(state.settings);
     audio.ui(true);
     paintModeToggle();
+    buildMenu(); selectPlanet(state.mode === 'survival' ? campaignRun?.campaign.activePlanet ?? 'earth' : state.selected.id);
   });
   host.prepend(wrap);
   paintModeToggle();
@@ -295,7 +333,7 @@ function buildSettingsButton() {
 }
 
 function paintModeToggle() {
-  el('mode-description').textContent = state.mode === 'creative' ? 'Creative · unlimited materials. Build without limits.' : 'Survival · craft, build and keep your suit alive.';
+  el('mode-description').textContent = state.mode === 'creative' ? 'Creative · unlimited materials. Build without limits.' : 'Survival · restore eight relays. Find the missing convoy.';
   for (const b of document.querySelectorAll('#mode-toggle button')) {
     b.classList.toggle('on', b.dataset.mode === state.mode);
     b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode));
@@ -335,6 +373,9 @@ const TIPS = {
     'Your suit is the clock: refill from canisters or a Life Support Unit.',
     'Frozen volatiles smelt into food and oxygen. They exist on every world.',
     'A pickaxe you cannot afford yet: mine rock with the hand drill first.',
+    'Shift or Ctrl sprints forward. Hold C to sneak.',
+    'Esc → Mission journal shows your story, relay supplies and next flight.',
+    'Esc → Checkpoints saves a named copy of your whole expedition.',
     'Falls hurt by impact speed, so low gravity really is safer.',
     'Smelters need fuel - coal burns longest, planks and sulfur will do.',
   ],
@@ -343,7 +384,9 @@ const TIPS = {
 let launchInProgress = false;
 async function land(useSave, replaceConfirmed = false) {
   const planet = state.selected;
-  if (!planet || state.screen === 'loading' || launchInProgress) return;
+  if (!planet || state.screen === 'loading' || launchInProgress || mutationBusy) return;
+  if (state.mode === 'survival') return launchCampaign(useSave, replaceConfirmed);
+  campaignActive = false;
   if (!useSave && state.saves.has(planet.id) && !replaceConfirmed) {
     el('new-world-warning').textContent = `This replaces your saved expedition on ${planet.name}. Choose Continue to keep exploring it.`;
     el('new-world-dialog').showModal();
@@ -377,13 +420,194 @@ async function land(useSave, replaceConfirmed = false) {
   game.applySettings(state.settings);
   audio.setVolume(state.settings.volume);
   try {
-    await game.enter(planet, save ? { ...save, mode } : { seed, mode });
+    await enterWorld(planet, save ? { ...save, mode } : { seed, mode });
+    onWorldReady();
     audio.ambience(planet);
   } catch (error) {
     game.dispose(false); show('menu');
     toast(`Expedition could not start: ${error.message}`, 6000);
   } finally { launchInProgress = false; }
 }
+
+// Campaign transitions persist one envelope so inventory and unlocks commit together.
+async function enterWorld(planet, save, options) {
+  show('loading');
+  el('loading-title').textContent = `Descending to ${planet.name}`;
+  el('loading-bar').style.width = '2%';
+  el('loading-fact').textContent = `${planet.facts[0]} · ${TIPS[save.mode ?? 'creative'][1]}`;
+  drawPlanetOrb(el('loading-orb').getContext('2d'), planet, 180, 0);
+  game.applySettings(state.settings);
+  let timeout;
+  const ready = new Promise((resolve, reject) => {
+    readyWaiter = resolve;
+    timeout = setTimeout(() => reject(new Error('Landing timed out. Your last save is available from Continue.')), 60000);
+  });
+  try {
+    // Install the ready hook before enter: a cached landing may finish immediately.
+    await game.enter(planet, save, options);
+    await ready;
+    audio.ambience(planet);
+  } finally { clearTimeout(timeout); readyWaiter = null; }
+}
+
+async function launchCampaign(useSave, confirmed) {
+  if (!canVisit(campaignRun?.campaign, state.selected.id)) return toast('Restore the preceding relay to unlock this destination.');
+  if (!useSave && (campaignRun || campaignReadError) && !confirmed) {
+    el('new-world-warning').textContent = 'This replaces the current campaign and all eight of its worlds. Named checkpoints and earlier standalone worlds are kept. Continue resumes your journey.';
+    el('new-world-dialog').showModal(); el('btn-cancel-new').focus(); return;
+  }
+  const previous = campaignRun;
+  launchInProgress = true;
+  stopAutosave(); game.guestWorld = false; campaignActive = true;
+  audio.resume(); music.start();
+  try {
+    let save;
+    if (useSave && campaignRun) {
+      campaignRun = validateCampaignSave(campaignRun);
+      if (state.selected.id !== campaignRun.campaign.activePlanet) {
+        const trip = travelSave(campaignRun, state.selected.id);
+        campaignRun = trip.run; save = trip.save;
+      } else save = campaignRun.worlds[campaignRun.campaign.activePlanet];
+    } else {
+      campaignRun = { kind: 'campaign', version: 1, campaign: createCampaign(), worlds: {}, savedAt: Date.now() };
+      const text = el('seed-input').value.trim();
+      save = { mode: 'survival', seed: text ? hashSeed(text) : (Math.random() * 2 ** 31) | 0 };
+    }
+    await enterWorld(PLANET_BY_ID.get(campaignRun.campaign.activePlanet), save);
+    const captured = captureCampaign(campaignRun, game.snapshot());
+    await writeSave('campaign-current', captured);
+    campaignRun = captured; campaignReadError = false;
+    onWorldReady();
+  } catch (error) {
+    campaignRun = previous; campaignActive = false;
+    game.dispose(false); music.stop(); audio.stopAmbience(); show('menu');
+    buildMenu(); selectPlanet(campaignRun?.campaign.activePlanet ?? 'earth');
+    toast(`Campaign could not start: ${error.message}`, 7000);
+  } finally { launchInProgress = false; }
+}
+
+function ownedWorld() { return !!(game.running && game.spawned && !game.guestWorld && game.net?.role !== 'client'); }
+function paintCampaign() {
+  const active = campaignActive && ownedWorld();
+  el('btn-mission').hidden = !active;
+  el('btn-pause-checkpoints').disabled = !ownedWorld();
+  el('mission-tracker').classList.toggle('hidden', !active);
+  if (!active) return;
+  const c = campaignRun.campaign;
+  const stage = stageFor(game.planet.id);
+  el('mission-tracker').textContent = c.completed ? 'THE LAST SIGNAL · COMPLETE  /  Esc → Mission journal' : `${stage.title}  ·  ${c.repaired.length}/8 relays  /  Esc → Mission journal`;
+}
+function getMission() {
+  if (!campaignActive || !ownedWorld()) return null;
+  const c = campaignRun.campaign;
+  const requirements = requirementsFor(c, game.planet.id, game.inventory);
+  return { campaign: c, stage: stageFor(game.planet.id), requirements,
+    nextPlanet: nextDestination(c), planetName: game.planet.name,
+    canRepair: !mutationBusy && !launchInProgress && !game.dead && !c.repaired.includes(game.planet.id) && requirements.every(r => r.have >= r.count),
+    canTravel: !mutationBusy && !launchInProgress && !game.dead && !!nextDestination(c) };
+}
+async function repairMission() {
+  if (!campaignActive || !ownedWorld() || mutationBusy || launchInProgress || game.dead) throw new Error('Relay repair is unavailable in this session.');
+  if (!game.paused) pause();
+  mutationBusy = true; game.persistenceBusy = true;
+  const previous = clone(campaignRun), inventory = game.inventory.serialize();
+  try {
+    await saveTail.catch(() => {});
+    const campaign = repairRelay(campaignRun.campaign, game.planet.id, game.inventory);
+    const captured = captureCampaign({ ...campaignRun, campaign }, game.snapshot());
+    await writeSave('campaign-current', captured);
+    campaignRun = captured; game.pushHotbar(); paintCampaign();
+    toast(campaign.completed ? 'Signal restored. Dawn is coming home.' : 'Relay restored. Your next route is unlocked.', 5000);
+  } catch (error) {
+    campaignRun = previous; game.inventory.restore(inventory); game.pushHotbar();
+    throw error;
+  } finally { mutationBusy = false; game.persistenceBusy = false; }
+}
+async function travelCampaign(destination) {
+  if (!campaignActive || !ownedWorld() || mutationBusy || launchInProgress || game.dead) throw new Error('Travel is unavailable in this session.');
+  if (!canVisit(campaignRun.campaign, destination)) throw new Error('Restore the preceding relay before traveling there.');
+  launchInProgress = true;
+  let previous = null, replacing = false;
+  try {
+    if (game.net && !(await expeditionUI.confirm('Close this LAN session?', 'Travel closes the current LAN session. Your crew can rejoin when you open the destination to LAN.', 'Travel'))) return false;
+    if (game.dead) throw new Error('Respawn before traveling.');
+    game.persistenceBusy = true;
+    game.stopLan(); paintRoster();
+    await saveSession(true);
+    previous = clone(campaignRun);
+    const trip = travelSave(previous, destination);
+    stopAutosave(); expeditionUI.closeAll();
+    campaignRun = trip.run; replacing = true;
+    game.persistenceBusy = false;
+    await enterWorld(PLANET_BY_ID.get(destination), trip.save);
+    const captured = captureCampaign(campaignRun, game.snapshot());
+    await writeSave('campaign-current', captured);
+    campaignRun = captured;
+    onWorldReady(); paintRoster();
+    return true;
+  } catch (error) {
+    if (replacing) {
+      // Departure committed before replacement; Continue recovers that state.
+      campaignRun = previous; campaignActive = false;
+      game.dispose(false); music.stop(); audio.stopAmbience(); show('menu');
+      buildMenu(); selectPlanet(previous.campaign.activePlanet);
+    }
+    throw error;
+  } finally { launchInProgress = false; game.persistenceBusy = false; }
+}
+async function restoreCheckpoint(id) {
+  if (game.guestWorld && game.running) throw new Error('Leave the host’s game before restoring your own checkpoint.');
+  if (launchInProgress || mutationBusy) throw new Error('Wait for the current operation.');
+  launchInProgress = true;
+  let previous = campaignRun;
+  let replacing = false;
+  try {
+    const entry = await checkpoints.loadCheckpoint(id);
+    if (!entry) throw new Error('This checkpoint no longer exists.');
+    const payload = entry.snapshot;
+    const restored = payload.kind === 'campaign' ? validateCampaignSave(payload) : null;
+    const planet = PLANET_BY_ID.get(restored ? restored.campaign.activePlanet : payload.planetId);
+    if (!planet) throw new Error('This checkpoint names an unknown world.');
+    game.persistenceBusy = true;
+    game.stopLan(); paintRoster();
+    await saveSession(true);
+    previous = campaignRun;
+    stopAutosave();
+    game.guestWorld = false; campaignActive = !!restored;
+    campaignRun = restored ?? previous;
+    replacing = true;
+    expeditionUI.closeAll(); screens.close(); screens.hideDeath(); respawnAction = null;
+    game.persistenceBusy = false;
+    await enterWorld(planet, restored ? restored.worlds[planet.id] : payload);
+    if (restored) {
+      const captured = captureCampaign(restored, game.snapshot());
+      await writeSave('campaign-current', captured); campaignRun = captured;
+    } else await writeSave(planet.id, game.snapshot());
+    state.mode = restored ? 'survival' : payload.mode;
+    state.settings.mode = state.mode; persistSettings();
+    music.start(); onWorldReady(); paintRoster();
+  } catch (error) {
+    if (replacing) {
+      campaignRun = previous; campaignActive = false; game.dispose(false);
+      music.stop(); audio.stopAmbience(); show('menu'); buildMenu(); selectPlanet(previous?.campaign.activePlanet ?? 'earth');
+    }
+    throw error;
+  } finally { launchInProgress = false; game.persistenceBusy = false; }
+}
+const expeditionUI = new ExpeditionUI({
+  ...checkpoints,
+  canSave: () => ownedWorld() && !mutationBusy && !launchInProgress,
+  saveCheckpoint: async name => {
+    if (!ownedWorld() || mutationBusy || launchInProgress) throw new Error('Land in your own world before creating a checkpoint.');
+    const snapshot = campaignActive ? captureCampaign(campaignRun, game.snapshot()) : game.snapshot();
+    const result = await checkpoints.saveCheckpoint(name, snapshot);
+    toast('Checkpoint saved. Autosave will keep this copy intact.'); return result;
+  },
+  loadCheckpoint: restoreCheckpoint, getMission, repair: repairMission, travel: travelCampaign, toast,
+});
+el('btn-checkpoints').addEventListener('click', () => expeditionUI.openCheckpoints());
+el('btn-pause-checkpoints').addEventListener('click', () => expeditionUI.openCheckpoints());
+el('btn-mission').addEventListener('click', () => expeditionUI.openMission());
 
 function hashSeed(text) {
   if (/^-?\d+$/.test(text)) return Number(text) | 0;
@@ -393,6 +617,9 @@ function hashSeed(text) {
 }
 
 function onWorldReady() {
+  if (readyWaiter) { game.setPaused(true); readyWaiter(); return; }
+  game.setPaused(false);
+  paintCampaign();
   show('play');
   el('hud').classList.remove('hidden');
   el('loading-bar').style.width = '100%';
@@ -589,6 +816,7 @@ function paintHud(h) {
     <span class="pill"><b>${game.planet.name}</b> · ${h.gravity.toFixed(2)} m/s²</span>
     <span class="pill">jump <b>${h.jump.toFixed(1)}</b> blocks · ${clock}</span>
     ${h.flying ? '<span class="pill hot">FLIGHT</span>' : ''}
+    ${h.sprinting && !h.flying ? '<span class="pill hot" id="sprint-indicator">SPRINT</span>' : ''}
     ${h.lamp ? '<span class="pill hot">LAMP</span>' : ''}
     ${h.inLiquid ? '<span class="pill hot">SUBMERGED</span>' : ''}
     ${h.limit ? `<span class="pill hot">${h.limit === 'floor' ? 'BEDROCK LEVEL' : 'ALTITUDE CEILING'}</span>` : ''}
@@ -762,9 +990,11 @@ function pause() {
   show('pause');
   el('pause-title').textContent = game.planet.name;
   el('pause-sub').textContent = `${game.planet.subtitle} · seed ${game.seed}`;
+  paintCampaign();
 }
 
 function resume() {
+  if (mutationBusy || launchInProgress) return;
   music.duck(false);
   show('play');
   game.setPaused(false);
@@ -779,7 +1009,7 @@ async function toOrbit() {
   game.dispose(false);
   state.saves = new Set(await store.listOwnWorlds());
   buildMenu();
-  if (planetId) selectPlanet(planetId);
+  if (planetId) selectPlanet(state.mode === 'survival' ? campaignRun?.campaign.activePlanet ?? 'earth' : planetId);
   show('menu'); paintRoster();
   if (lanAvailable()) globalThis.spaceAPI.net.discover(true);
 }
@@ -796,11 +1026,16 @@ async function leaveSession(reason) {
 let autosaveTimer = null;
 function startAutosave() {
   stopAutosave();
-  autosaveTimer = setInterval(() => { if (game.running) saveNow(true).catch(() => toast('Autosave failed. Check free disk space.', 6000)); }, 30000);
+  autosaveTimer = setInterval(() => { if (game.running && !launchInProgress && !mutationBusy) saveNow(true).catch(() => toast('Autosave failed. Check free disk space.', 6000)); }, 30000);
 }
 function stopAutosave() { if (autosaveTimer) clearInterval(autosaveTimer); autosaveTimer = null; }
 
 async function saveNow(quiet = false) {
+  if (launchInProgress || mutationBusy) throw new Error('Wait for the current operation to finish.');
+  return saveSession(quiet);
+}
+async function saveSession(quiet) {
+  if (!game.running || !game.spawned) return;
   const snap = game.snapshot();
   if (!snap) return;
   if (game.net?.role === 'client' || game.guestWorld) {
@@ -814,7 +1049,14 @@ async function saveNow(quiet = false) {
     if (!quiet) toast('Character saved');
     return;
   }
-  await store.saveWorld(snap.planetId, snap);
+  if (campaignActive) {
+    const captured = captureCampaign(campaignRun, snap);
+    campaignRun = captured;
+    await writeSave('campaign-current', captured);
+    if (!quiet) toast('Campaign saved');
+    return;
+  }
+  await writeSave(snap.planetId, snap);
   state.saves.add(snap.planetId);
   if (!quiet) toast('World saved');
 }
@@ -845,7 +1087,7 @@ el('game').addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', (e) => {
-  if (el('new-world-dialog').open) return;
+  if (document.querySelector('dialog[open]')) return;
   if (e.code === 'Escape') {
     // The death card has no other way out: without this you cannot pause, save
     // or leave until you click Respawn.
@@ -865,7 +1107,7 @@ document.addEventListener('keydown', (e) => {
   }
   if (e.target.closest?.('input, textarea, select, button, [contenteditable]')) return;
   if (state.screen === 'menu') {
-    if (e.code === 'Enter' && state.selected) land(state.saves.has(state.selected.id));
+    if (e.code === 'Enter' && state.selected) land(state.mode === 'survival' ? !!campaignRun : state.saves.has(state.selected.id));
     if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
       const i = PLANETS.findIndex((p) => p === state.selected);
       const n = (i + (e.code === 'ArrowRight' ? 1 : PLANETS.length - 1) + PLANETS.length) % PLANETS.length;
@@ -913,7 +1155,7 @@ el('set-name').addEventListener('change', () => {
 });
 el('btn-reset-settings').addEventListener('click', () => {
   state.settings = { ...DEFAULT_SETTINGS }; state.mode = state.settings.mode;
-  applyAllSettings(); persistSettings(); paintModeToggle(); toast('Default settings restored');
+  applyAllSettings(); persistSettings(); paintModeToggle(); buildMenu(); selectPlanet(campaignRun?.campaign.activePlanet ?? 'earth'); toast('Default settings restored');
 });
 for (const tab of document.querySelectorAll('[data-settings-tab]')) tab.addEventListener('click', () => {
   for (const b of document.querySelectorAll('[data-settings-tab]')) { b.classList.toggle('active', b === tab); b.setAttribute('aria-pressed', String(b === tab)); }
@@ -949,21 +1191,29 @@ window.__space = {
   game, state, audio, music, land, selectPlanet, show, screens,
   hostLan, joinLan, screensOpen: () => screens.isOpen(),
   lanLobbies: () => lanMenu?._lobbies ?? [],
-  saveNow,
+  saveNow, repairMission, travelCampaign,
+  get campaignRun() { return campaignRun; },
+  get campaignActive() { return campaignActive; },
 };
 
 // ------------------------------------------------------------------- boot
 (async function boot() {
-  for (const id of await store.listOwnWorlds()) state.saves.add(id);
+  try {
+    for (const id of await store.listOwnWorlds()) state.saves.add(id);
+    const hadCampaign = (await store.listWorlds()).includes('campaign-current');
+    const saved = await store.loadWorld('campaign-current');
+    if (hadCampaign && !saved) throw new Error('Campaign file is damaged');
+    if (saved) campaignRun = validateCampaignSave(saved);
+  } catch (error) { campaignReadError = true; toast(`Saved campaign could not be read: ${error.message}. Its file has been kept.`, 8000); }
   buildMenu();
   buildModeToggle();
   buildSettingsButton();
   buildLanMenu();
   buildVitals();
   buildVisor();
-  selectPlanet(PLANETS[0].id);
+  selectPlanet(state.mode === 'survival' ? campaignRun?.campaign.activePlanet ?? 'earth' : PLANETS[0].id);
   applyAllSettings();
-  el('build-badge').textContent = store.isDesktop() ? 'DESKTOP · 1.0.0' : 'BROWSER PREVIEW · 1.0.0';
+  el('build-badge').textContent = store.isDesktop() ? 'DESKTOP · 1.1.0' : 'BROWSER PREVIEW · 1.1.0';
   show('menu');
 })();
 
@@ -975,7 +1225,7 @@ window.render_game_to_text = () => JSON.stringify({
   survival: game.survival?.serialize(), selectedItem: game.heldItem?.(),
   mobs: (() => { const rows=[]; game.mobs?.forEachLive(m => rows.push({id:m.id,type:m.kind,state:m.state,x:m.pos.x,y:m.pos.y,z:m.pos.z,health:m.health})); return rows; })(),
   target: game.target, network: game.net ? { role: game.net.role, peers: game.net.players?.size } : null,
-  settings: state.settings,
+  settings: state.settings, campaign: campaignActive ? campaignRun?.campaign : null, sprinting: !!game.player?.sprinting,
 });
 window.advanceTime = async ms => {
   if (!game.running || !game.scene) return;

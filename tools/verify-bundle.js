@@ -96,12 +96,24 @@ try {
       Object.assign(S.state.settings,{renderDistance:3,renderScale:0.75});
       S.game.applySettings({renderDistance:3,renderScale:0.75});
     }
-    S.state.mode='survival'; S.selectPlanet('mars'); document.getElementById('btn-land').click();
+    S.state.mode='survival'; S.selectPlanet('earth'); document.getElementById('btn-land').click();
   }, process.env.LUNACRUST_SOFTWARE_RENDERING === '1');
-  await page.waitForFunction(() => window.__space.game.spawned && window.__space.game.world.chunks.size>=25,{},{timeout:60000});
+  await page.waitForFunction(() => window.__space.state.screen === 'play' && window.__space.game.spawned && window.__space.game.world.chunks.size>=25,{},{timeout:60000});
   const world=await page.evaluate(() => ({chunks:window.__space.game.world.chunks.size,kit:window.__space.game.inventory.count(54)}));
   check('worker streams a playable world', world.chunks>=25, `${world.chunks} chunks`);
   check('survival starter kit', world.kit>=1);
+  check('survival campaign begins on Earth', await page.evaluate(() => window.__space.campaignActive && window.__space.campaignRun.campaign.activePlanet === 'earth' && window.__space.campaignRun.campaign.visited.length === 1));
+  await page.evaluate(async () => {
+    const {saveCheckpoint,loadCheckpoint,deleteCheckpoint,listCheckpoints}=await import('./js/checkpoints.js');
+    const S=window.__space; S.game.setPaused(true); S.show('pause');
+    await S.saveNow(true);
+    const saved=await saveCheckpoint('Installer verification',S.campaignRun);
+    const loaded=await loadCheckpoint(saved.id);
+    if (loaded.snapshot.campaign.id !== S.campaignRun.campaign.id || (await listCheckpoints()).length !== 1) throw new Error('Checkpoint round trip failed');
+    await deleteCheckpoint(saved.id);
+    if ((await listCheckpoints()).length) throw new Error('Checkpoint deletion failed');
+  });
+  check('campaign and named checkpoint desktop persistence', true);
   if (process.env.LUNACRUST_SCREENSHOT) await page.screenshot({path:resolve(process.env.LUNACRUST_SCREENSHOT)});
   if (rendererErrors.length) throw new Error(`Renderer errors: ${rendererErrors.join('; ')}`);
 } catch (error) {
