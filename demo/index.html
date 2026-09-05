@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' app:; script-src 'self' app:; style-src 'self' 'unsafe-inline' app:; img-src 'self' data: app:; media-src 'self' app:; worker-src 'self' blob: app:;" />
+  <link rel="icon" href="data:," />
+  <title>Lunacrust — an expedition of your own</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- ------------------------------------------------------------- MENU -->
+  <section id="screen-menu" class="screen">
+    <canvas id="stars"></canvas>
+    <header class="menu-head">
+      <a class="brand" href="#" aria-label="Lunacrust home">
+        <svg class="brand-glyph" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M35 7A20 20 0 1 0 41 33A18 18 0 0 1 35 7Z" fill="currentColor"/><path d="m26 13 6 10 11 5-13 3-4 12-3-13-11-4 12-3z" fill="currentColor"/></svg>
+        <h1>Lunacrust</h1>
+      </a>
+      <nav class="menu-meta" aria-label="Main navigation">
+        <button id="btn-expedition" class="nav-link active" type="button">Expedition</button>
+        <button id="btn-checkpoints" class="nav-link" type="button">Checkpoints</button>
+        <button id="btn-network" class="nav-link" type="button">Play with friends</button>
+      </nav>
+    </header>
+    <main class="mission-stage" id="mission-stage">
+      <div class="destination">
+        <div class="orb-stage"><canvas id="launch-orb" width="480" height="480" aria-label="Selected planet"></canvas></div>
+        <div class="destination-copy">
+          <p id="campaign-intro" class="campaign-kicker">THE LAST SIGNAL · 0 / 8 RELAYS RESTORED</p>
+          <h2 id="launch-name">An expedition of your own.</h2>
+          <p id="launch-sub">Eight worlds. Find your footing.</p>
+          <div class="launch-stats" id="launch-stats"></div>
+        </div>
+      </div>
+      <section class="destinations" aria-labelledby="destinations-title">
+        <div class="section-head"><h2 id="destinations-title">Choose your world</h2><span>8 destinations</span></div>
+        <div class="planet-grid" id="planet-grid" aria-label="Destinations"></div>
+        <p class="expedition-note" id="expedition-note">Mine a shelter. Build a life. See what wakes after dark.</p>
+      </section>
+    </main>
+    <section id="network-intro" class="network-intro hidden">
+      <h2>A whole world. <br />Your whole crew.</h2>
+      <p>Join the same Wi-Fi, open Lunacrust, and explore together.</p>
+      <ol><li><b>Host</b> a world, then press Esc and choose Open to LAN.</li><li><b>Join</b> a game below, or enter the host’s address.</li></ol>
+      <p id="network-platform-note">Keep the host’s game open. Allow Lunacrust on your private network if the firewall asks.</p>
+    </section>
+    <footer class="launch-bar" id="launch-bar">
+      <p class="launch-caption" id="mode-description">Survival · craft, build and keep your suit alive.</p>
+      <div class="launch-actions">
+        <label class="seed-field"><span>World seed</span><input id="seed-input" type="text" maxlength="64" placeholder="Random" /></label>
+        <button id="btn-continue" class="btn ghost" hidden>Continue</button>
+        <button id="btn-land" class="btn primary" disabled>Begin expedition <span aria-hidden="true">↗</span></button>
+      </div>
+    </footer>
+    <div class="menu-footer"><span>Independent worlds. Shared discoveries.</span><span id="build-badge">Lunacrust 1.1</span></div>
+  </section>
+
+  <!-- ---------------------------------------------------------- LOADING -->
+  <section id="screen-loading" class="screen hidden">
+    <div class="loading-box">
+      <canvas id="loading-orb" width="180" height="180"></canvas>
+      <h2 id="loading-title">Descending…</h2>
+      <div class="bar"><div class="bar-fill" id="loading-bar"></div></div>
+      <p class="fact" id="loading-fact"></p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------- HUD -->
+  <div id="hud" class="hidden">
+    <div id="crosshair"></div>
+
+    <div id="debug" class="panel hidden"></div>
+
+    <div id="status-pills"></div>
+
+    <div id="mission-tracker" class="hidden"></div>
+    <div id="block-name"></div>
+    <div id="hotbar"></div>
+
+
+  </div>
+
+  <!-- --------------------------------------------------------- PALETTE -->
+  <section id="screen-blocks" class="screen hidden dim">
+    <div class="palette-box">
+      <header>
+        <h2>Block palette</h2>
+        <p class="muted">Click a block to load it into hotbar slot <b id="palette-slot">1</b>. <kbd>E</kbd> or <kbd>Esc</kbd> to close.</p>
+      </header>
+      <div class="palette-grid" id="palette-grid"></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------- SURVIVAL SCREENS -->
+  <!-- Shells only. screens.js builds every slot, gauge and recipe row inside
+       them, because the grids change size between the 2x2 suit panel, the 3x3
+       fabricator and the smelter. -->
+  <section id="screen-inventory" class="screen hidden dim"></section>
+  <section id="screen-death" class="screen hidden dim"></section>
+
+  <!-- Floating layers: the stack on the mouse and the item tooltip. They live
+       outside the panels so neither can clip them. -->
+  <div id="inv-cursor" class="inv-cursor hidden"></div>
+  <div id="inv-tip" class="inv-tip hidden"></div>
+
+  <!-- ----------------------------------------------------------- PAUSE -->
+  <section id="screen-pause" class="screen hidden dim">
+    <div class="pause-box">
+      <h2 id="pause-title">Paused</h2>
+      <p id="pause-sub" class="muted"></p>
+
+      <div class="pause-actions">
+        <button id="btn-resume" class="btn primary">Resume</button>
+        <button id="btn-lan" class="btn ghost">Open to LAN</button>
+        <button id="btn-orbit" class="btn ghost">Save &amp; return to orbit</button>
+      </div>
+
+      <div class="expedition-actions"><button id="btn-mission" class="btn ghost" type="button">Mission journal</button><button id="btn-pause-checkpoints" class="btn ghost" type="button">Checkpoints</button></div>
+      <p id="lan-addresses" class="hidden"></p>
+      <div id="pause-roster" class="lan-roster hidden"></div>
+
+      <nav class="settings-tabs" aria-label="Settings sections">
+        <button type="button" data-settings-tab="display" class="active">Display &amp; controls</button>
+        <button type="button" data-settings-tab="audio">Sound</button>
+        <button type="button" data-settings-tab="guide">Field guide</button>
+      </nav>
+      <div class="settings" data-settings-panel="display">
+        <label class="name-setting" for="set-name">Explorer name <input id="set-name" type="text" maxlength="24" autocomplete="off" /></label>
+        <h3>Your view</h3>
+        <label>Render distance <output id="out-rd"></output>
+          <input id="set-rd" type="range" min="3" max="12" step="1" />
+        </label>
+        <label>Field of view <output id="out-fov"></output>
+          <input id="set-fov" type="range" min="60" max="100" step="1" />
+        </label>
+        <label>Mouse sensitivity <output id="out-sens"></output>
+          <input id="set-sens" type="range" min="0.3" max="2.5" step="0.1" />
+        </label>
+        <label>Resolution scale <output id="out-scale"></output>
+          <input id="set-scale" type="range" min="0.75" max="2" step="0.25" />
+        </label>
+        <div class="setting-switches">
+          <label><span>Invert mouse Y</span><input id="set-invert" type="checkbox" /></label>
+          <label><span>Reduce menu motion</span><input id="set-motion" type="checkbox" /></label>
+        </div>
+        <button type="button" id="btn-fullscreen" class="btn ghost small">Toggle fullscreen</button>
+        <p class="settings-note">Changes apply immediately and are saved on this device.</p>
+      </div>
+      <div class="settings hidden" data-settings-panel="audio">
+        <h3>Expedition audio</h3>
+        <label>Sound effects <output id="out-vol"></output>
+          <input id="set-vol" type="range" min="0" max="1" step="0.05" />
+        </label>
+        <label>Music <output id="out-music"></output>
+          <input id="set-music" type="range" min="0" max="1" step="0.05" />
+        </label>
+      </div>
+
+      <div class="controls hidden" data-settings-panel="guide">
+        <h3>Make yourself at home</h3><p class="muted">Survival: mine rock with your drill, craft tools in your pack, and use canisters to refill oxygen. Place a Fabricator to unlock larger recipes. Creative: unlimited materials and suit flight.</p>
+        <ul>
+          <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</li>
+          <li><kbd>Space</kbd> jump · double-tap to fly</li>
+          <li><kbd>Shift</kbd> / <kbd>Ctrl</kbd> sprint · <kbd>C</kbd> sneak · <kbd>Shift</kbd> descend in flight</li>
+          <li><kbd>LMB</kbd> mine · <kbd>RMB</kbd> place · <kbd>MMB</kbd> pick</li>
+          <li><kbd>1</kbd>–<kbd>9</kbd> / wheel select block</li>
+          <li><kbd>E</kbd> pack &amp; crafting / creative palette</li>
+          <li><kbd>F</kbd> fly · <kbd>L</kbd> helmet lamp · <kbd>R</kbd> respawn</li>
+          <li><kbd>F3</kbd> debug · <kbd>F11</kbd> fullscreen · <kbd>Esc</kbd> pause</li>
+        </ul>
+      </div>
+      <div class="settings-footer"><button id="btn-reset-settings" class="btn ghost small" type="button">Restore defaults</button><span>Saved automatically</span></div>
+    </div>
+  </section>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="new-world-dialog" aria-labelledby="new-world-title">
+    <h2 id="new-world-title">Start a new expedition?</h2>
+    <p id="new-world-warning">This replaces the saved expedition on this planet. Continue to keep exploring your existing world.</p>
+    <div class="dialog-actions">
+      <button id="btn-cancel-new" class="btn ghost" type="button">Keep saved world</button>
+      <button id="btn-confirm-new" class="btn danger" type="button">Replace saved world</button>
+    </div>
+  </dialog>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

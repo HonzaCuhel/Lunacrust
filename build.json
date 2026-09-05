@@ -1,0 +1,8 @@
+{
+  "version": "1.1.0",
+  "channel": "release-candidate",
+  "sourceCommit": "ef68a7f0773bb5f4631f5b11908b6ce915733968",
+  "dirty": false,
+  "browserMode": "single-player",
+  "desktopLANMaxPlayers": 8
+}
