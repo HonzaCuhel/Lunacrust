@@ -22,6 +22,7 @@
       </a>
       <nav class="menu-meta" aria-label="Main navigation">
         <button id="btn-expedition" class="nav-link active" type="button">Expedition</button>
+        <button id="btn-checkpoints" class="nav-link" type="button">Checkpoints</button>
         <button id="btn-network" class="nav-link" type="button">Play with friends</button>
       </nav>
     </header>
@@ -29,6 +30,7 @@
       <div class="destination">
         <div class="orb-stage"><canvas id="launch-orb" width="480" height="480" aria-label="Selected planet"></canvas></div>
         <div class="destination-copy">
+          <p id="campaign-intro" class="campaign-kicker">THE LAST SIGNAL · 0 / 8 RELAYS RESTORED</p>
           <h2 id="launch-name">An expedition of your own.</h2>
           <p id="launch-sub">Eight worlds. Find your footing.</p>
           <div class="launch-stats" id="launch-stats"></div>
@@ -37,7 +39,7 @@
       <section class="destinations" aria-labelledby="destinations-title">
         <div class="section-head"><h2 id="destinations-title">Choose your world</h2><span>8 destinations</span></div>
         <div class="planet-grid" id="planet-grid" aria-label="Destinations"></div>
-        <p class="expedition-note">Mine a shelter. Build a life. See what wakes after dark.</p>
+        <p class="expedition-note" id="expedition-note">Mine a shelter. Build a life. See what wakes after dark.</p>
       </section>
     </main>
     <section id="network-intro" class="network-intro hidden">
@@ -54,7 +56,7 @@
         <button id="btn-land" class="btn primary" disabled>Begin expedition <span aria-hidden="true">↗</span></button>
       </div>
     </footer>
-    <div class="menu-footer"><span>Independent worlds. Shared discoveries.</span><span id="build-badge">Lunacrust 1.0</span></div>
+    <div class="menu-footer"><span>Independent worlds. Shared discoveries.</span><span id="build-badge">Lunacrust 1.1</span></div>
   </section>
 
   <!-- ---------------------------------------------------------- LOADING -->
@@ -75,6 +77,7 @@
 
     <div id="status-pills"></div>
 
+    <div id="mission-tracker" class="hidden"></div>
     <div id="block-name"></div>
     <div id="hotbar"></div>
 
@@ -116,6 +119,7 @@
         <button id="btn-orbit" class="btn ghost">Save &amp; return to orbit</button>
       </div>
 
+      <div class="expedition-actions"><button id="btn-mission" class="btn ghost" type="button">Mission journal</button><button id="btn-pause-checkpoints" class="btn ghost" type="button">Checkpoints</button></div>
       <p id="lan-addresses" class="hidden"></p>
       <div id="pause-roster" class="lan-roster hidden"></div>
 
@@ -161,7 +165,7 @@
         <ul>
           <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</li>
           <li><kbd>Space</kbd> jump · double-tap to fly</li>
-          <li><kbd>Shift</kbd> sneak / descend · <kbd>Ctrl</kbd> sprint</li>
+          <li><kbd>Shift</kbd> / <kbd>Ctrl</kbd> sprint · <kbd>C</kbd> sneak · <kbd>Shift</kbd> descend in flight</li>
           <li><kbd>LMB</kbd> mine · <kbd>RMB</kbd> place · <kbd>MMB</kbd> pick</li>
           <li><kbd>1</kbd>–<kbd>9</kbd> / wheel select block</li>
           <li><kbd>E</kbd> pack &amp; crafting / creative palette</li>

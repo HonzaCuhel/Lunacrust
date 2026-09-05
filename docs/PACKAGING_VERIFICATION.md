@@ -1,4 +1,8 @@
-# Packaging verification — 2026-09-05
+# Lunacrust 1.1.0 packaging verification
+
+Final native verification for 1.1.0 is in progress. The records below are historical 1.0 evidence and do not establish 1.1 behavior.
+
+# Historical 1.0 packaging verification — 2026-09-05
 
 [CI run 33927997741](https://github.com/HonzaCuhel/Lunacrust/actions/runs/33927997741) passed all five jobs for commit `14b7bfbcd4e653b45875f57eab4b257186cd268d`. The four packages were built on their native OS and architecture with the pinned lockfile: Electron 44.2.0, electron-builder 26.15.3, Playwright 1.62.1 and Node.js 24.19.0. Every native build host passed all 29 deterministic test files and comparison of 65 shipped source/assets plus application metadata.
 

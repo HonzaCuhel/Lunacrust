@@ -1,5 +1,5 @@
 # Lunacrust
-A desktop voxel expedition sandbox for friends on the same local network. Explore eight Solar System worlds, mine and build, craft tools and life support, and survive original alien fauna. Survival and creative modes. Windows, macOS and Linux distributions; browser for single-player development.
+A desktop voxel expedition sandbox for friends on the same local network. Explore eight Solar System worlds, mine and build, craft tools and life support, and survive original alien fauna. The Last Signal survival campaign starts on Earth, unlocks eight worlds and ends with the restored convoy signal. Creative opens every destination. Up to 50 independent named checkpoints preserve complete expeditions; Shift/Ctrl sprint and C sneak. Windows, macOS and Linux distributions; browser for single-player development.
 
 Success: choose a world, understand hazards, play, change working settings, save, join a friend's desktop expedition without a separate server. Trusted-LAN co-op with no cloud account.
 

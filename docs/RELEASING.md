@@ -62,6 +62,6 @@ Official packaging and signing documentation: https://www.electron.build/docs/ a
 
 ## Source and integrity
 
-`npm run source:archive` creates `dist/Lunacrust-1.0.0-source.tar.gz` from known source directories without dependencies, build outputs, profiles, private local notes or prototype MP3s. Run `npm run checksums` after the final package and source files exist to produce `dist/SHA256SUMS.txt`. Regenerate checksums after any rebuild. Keep the source archive and matching version next to the binaries when publishing.
+`npm run source:archive` creates `dist/Lunacrust-1.1.0-source.tar.gz` from known source directories without dependencies, build outputs, profiles, private local notes or prototype MP3s. Run `npm run checksums` after the final package and source files exist to produce `dist/SHA256SUMS.txt`. Regenerate checksums after any rebuild. Keep the source archive and matching version next to the binaries when publishing.
 
 Before a public release, complete an actual two-computer co-op session, exercise an installer on each target OS, confirm save/reload and disconnect behavior, and review the licenses in the produced package. Do not label an unexecuted CI configuration or a locally cross-built binary as a tested platform release.
