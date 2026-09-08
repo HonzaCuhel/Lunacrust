@@ -1,0 +1,139 @@
+# Lunacrust player and contributor guide
+
+[Back to the project](../README.md)
+
+**Eight worlds. One last signal.** An open-source voxel adventure across the Solar System. Follow a survival campaign from Earth to Jupiter, build freely in Creative, and explore together over desktop LAN.
+
+[![Watch the Lunacrust trailer — actual in-engine footage](https://honzacuhel.github.io/Lunacrust/assets/trailer-preview.gif)](https://honzacuhel.github.io/Lunacrust/#trailer)
+
+**[Play the browser demo](https://honzacuhel.github.io/Lunacrust/demo/) · [Explore the worlds](https://honzacuhel.github.io/Lunacrust/) · [Watch / download the trailer](https://honzacuhel.github.io/Lunacrust/assets/lunacrust-trailer.mp4)**
+
+The browser demo is single-player and needs a keyboard, mouse/trackpad and WebGL2. Desktop LAN supports up to eight players. No account required.
+
+> **Release candidate 1.1, ready for beta testing.** Desktop packages have passed native CI, but macOS/Windows installers are unsigned and the GitHub releases are still drafts. A stable public download has not been published. Physical two-computer Wi-Fi and a complete organic survival playthrough remain to be verified. [Read the evidence and open issues](RELEASE_STATUS.md).
+
+## Play
+
+The 1.1 candidate adds The Last Signal campaign, named checkpoints and Shift sprint. The packages below are prepared; public download publication is pending. Download and verification details are recorded in [release status](RELEASE_STATUS.md). Choose the package for your computer:
+
+| Computer | Package | Install |
+| --- | --- | --- |
+| Mac with Apple Silicon | `Lunacrust-1.1.0-mac-arm64-unsigned.dmg` | Open the DMG and drag Lunacrust into Applications. |
+| Mac with Intel processor | `Lunacrust-1.1.0-mac-x64-unsigned.dmg` | Open the DMG and drag Lunacrust into Applications. |
+| Windows x64 | `Lunacrust-1.1.0-win-x64-unsigned.exe` | Run the installer; no Node.js needed. |
+| Ubuntu / Debian x64 | `Lunacrust-1.1.0-linux-amd64.deb` | Open with your software installer, or use `sudo apt install ./Lunacrust-1.1.0-linux-amd64.deb`. |
+| Other Linux x64 | `Lunacrust-1.1.0-linux-x86_64.AppImage` | Make executable and run on a system that supports Chromium's sandbox. This format has not had a native runtime check. |
+
+The DEB includes installer setup for the Chromium sandbox and an application-specific AppArmor profile, relevant on Ubuntu systems that restrict unprivileged user namespaces. AppImage and unpacked launches do not run that installer. The DEB was installed and its sandboxed application tested on Ubuntu 24.04 in native CI; see [packaging verification](PACKAGING_VERIFICATION.md) for the precise platform coverage.
+
+Package availability and actual verification are recorded in [release status](RELEASE_STATUS.md). Local builds are unsigned unless the publisher supplies signing credentials. macOS may require approval in **System Settings → Privacy & Security** after opening; a downloaded unsigned app does not have the seamless Gatekeeper experience of a signed, notarized release. Windows may display an unknown-publisher prompt. Only open artifacts you trust. Never disable system security globally.
+
+Lunacrust needs a keyboard, mouse/trackpad and WebGL2-capable graphics. The menu supports 960×600 and larger windows. Try a lower render distance and resolution scale in Settings on integrated graphics. No account or internet connection is needed once installed.
+
+## Play on the same Wi-Fi
+
+1. Everyone opens the **same version** of the desktop app and connects to the same private Wi-Fi or wired LAN.
+2. The host chooses a planet, starts an expedition, presses **Esc**, then **Open to LAN**.
+3. Other players choose **Play with friends** and select the discovered expedition. If discovery is unavailable, use **Direct connect** with the host's address and port displayed in the pause menu.
+4. Keep the host's app open. The host owns the world; each guest saves their own character separately. Leaving or the host closing returns guests to orbit.
+
+Shared blocks, player avatars, hostile creatures, dropped loot, time and smelters are synchronized. One player at a time operates a smelter. In co-op the world continues while a menu is open, so find shelter before pausing. Chat is in the pause-menu player list. A maximum of eight players includes the host.
+
+Allow Lunacrust through the firewall on **private networks**. Access-point/client isolation on a guest Wi-Fi may prevent devices from communicating; use the normal home network. The default TCP game port is 25710 and discovery uses UDP 25718; use the address and port displayed by the host for direct connections. No router port forwarding is needed. This is trusted-LAN co-op, not an internet-hosting service or a cheat-resistant competitive server. The browser preview supports single-player only.
+
+## The expedition
+
+**Survival: The Last Signal** starts on Earth. A solar storm has silenced the network and a convoy is missing. Mine and craft the supplies listed in **Esc → Mission journal**, restore the local relay, then choose the next flight. Follow Earth → Moon → Mars → Venus → Europa → Io → Titan → Jupiter and restore all eight relays to finish the story. Revisit any unlocked world from orbit; your buildings remain and your current inventory and suit travel with you. Flights replenish oxygen. The host owns campaign progress; travel closes its LAN session, and friends can rejoin at the new destination. Survival includes crafting, health, energy, suit oxygen and hostile wildlife. You land with a drill, fabricator, rations, oxygen canisters and lamps. Mine rock, make tools, smelt materials, and build life support. Recipes accept local rock across planets. **Creative** opens every world immediately, with unlimited materials, flight and immunity to damage.
+
+| World | What to expect |
+| --- | --- |
+| Earth | Forests, oceans, familiar gravity and breathable air. The easiest start. |
+| The Moon | Craters and enormous low-gravity jumps; bring oxygen. |
+| Mars | Rust-colored canyons, ice and dust storms. |
+| Venus | Volcanic ground, dense haze and lava seas. |
+| Jupiter | Fictional storm decks suspended above a lethal void. |
+| Europa | Cracked ice and Jupiter overhead. |
+| Io | Sulfur plains and volcanic spires. |
+| Titan | Methane lakes and alien canopies. |
+
+Planet environments and wildlife are fictionalized for play. Gravity changes actual movement and fall damage. At night or underground, beware the **Flux Skitter**, a six-legged volatile alien that charges before bursting, and the **Basalt Resonator**, a mineral tripod with a telegraphed slam. Retreat, use terrain or improve your tools and suit.
+
+## Controls and settings
+
+| Input | Action |
+| --- | --- |
+| WASD / arrows | Move |
+| Space | Jump; double-tap to fly in creative |
+| Shift or Ctrl | Sprint forward on the ground; Ctrl boosts creative flight |
+| C | Sneak; force placement instead of interacting |
+| Shift in flight | Descend |
+| Left mouse | Mine or strike a creature |
+| Right mouse | Place; interact with a station; use held supplies |
+| Middle mouse | Pick a block in creative |
+| 1–9 / mouse wheel | Select hotbar slot |
+| E | Inventory/crafting or creative palette |
+| F / L / R | Creative flight / helmet lamp / creative respawn |
+| Esc | Mission journal, checkpoints, settings, LAN, save and return |
+| F3 / F11 | Debug information / desktop fullscreen |
+
+Settings are available before landing and from pause: render distance, field of view, sensitivity, resolution scale, inversion, reduced menu motion, independent music/effects levels and explorer name. Changes apply immediately and persist locally. Restore defaults is available if an old configuration behaves badly.
+
+## Saves
+
+**Checkpoints** in the menu or pause screen holds up to 50 independent named saves. Create several positions, rename them, restore an earlier one, or delete a selected copy. A campaign checkpoint includes all visited worlds and story progress. Autosave never overwrites named checkpoints. Restoring replaces the active session and closes its LAN connection; guests must leave the host before restoring their own world.
+
+A new survival campaign uses its own `campaign-current` save. Earlier standalone planet saves remain separate and can still be continued from the Creative destination menu; the save retains its original mode. New campaign confirmation keeps named checkpoints intact.
+
+Desktop saves are JSON files inside the OS's Lunacrust user-data directory (`~/Library/Application Support/Lunacrust/saves` on macOS). Writes are atomic, serialized and keep a previous backup. Compatible legacy desktop saves are copied on first launch without overwriting either version. Browser saves stay in that browser's local storage. Keep backups before moving to a different device or version. A guest character is keyed by the hosted world's unique ID and cannot replace your single-player planet save.
+
+## Build from source
+
+Use Node.js 22.17 or newer and npm:
+
+```sh
+npm ci
+npm start
+```
+
+For browser development, `npm run web` opens a local server at `http://127.0.0.1:5178`. Three.js is vendored from the pinned dependency on installation, so the game makes no CDN requests. Fonts and audio ship locally.
+
+```sh
+npm test                 # deterministic mechanics, network, settings and storage tests
+node tools/probe-campaign-lan.mjs # two-app campaign repair, travel and rejoin
+npm run probe:lan        # three actual Electron instances, isolated temporary saves
+node tools/probe-capacity.js dist/mac-arm64/Lunacrust.app # packaged host + seven TCP guests
+npm run probe:survival   # native survival mechanics
+node tools/check-campaign.mjs # full campaign, checkpoint and sprint browser integration
+node tools/check-ui.mjs  # running dev server + installed Chrome required
+npm run verify:bundle   # isolated native startup and local-asset checks
+npm run dist:mac        # DMG build
+npm run dist:linux      # Linux distributions
+npm run dist:win        # Windows installer (native Windows recommended)
+node tools/make-soundtrack.js  # regenerate the original score
+```
+
+See [release instructions](RELEASING.md) for platform CI, signing, checksums and source archives. Probes use temporary user-data directories; they must never run against your normal saved games.
+
+## Open source and credits
+
+Game code and original generated assets are available under the [MIT license](../LICENSE). Space Grotesk uses the SIL Open Font License; Three.js, Electron and their dependencies retain their notices. See [asset provenance](ASSET_PROVENANCE.md) and [third-party notices](../THIRD_PARTY_NOTICES.md).
+
+Lunacrust is independent and is not affiliated with Mojang or Microsoft. The source audit reduces identifiable copying/provenance risks; it is not a trademark clearance or a guarantee against legal claims. See the provenance document for what was checked and the limits of the evidence.
+
+Bug reports should include OS, game version, mode, planet, reproducible steps and a save copy when appropriate. Do not include private data or credentials. See [contributing](../CONTRIBUTING.md).
+
+## Trailer and demo website
+
+The [35-second HyperFrames trailer source](../videos/lunacrust-promo/README.md) includes real gameplay captures, original synthesized music and editable scenes. [Production brief](../videos/lunacrust-promo/BRIEF.md) · [Storyboard](../videos/lunacrust-promo/STORYBOARD.md).
+
+The website ships the actual browser game, local fonts and local audio; it has no analytics, external scripts or sign-in. To preview it:
+
+```sh
+npm ci
+node tools/build-site.mjs
+node tools/serve-site.mjs
+# Open http://127.0.0.1:5180
+node tools/check-site.mjs
+```
+
+See [demo publishing](DEMO_SITE.md) for the reproducible GitHub Pages workflow.

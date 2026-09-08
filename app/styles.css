@@ -1036,3 +1036,57 @@ h1 { font-size:28px; letter-spacing:-.04em; font-weight:600; }
   .lan-lobby-list { margin:12px 0; }
   .lan-manual { padding-top:16px; }
 }
+
+/* The Last Signal: readable expedition records, with the world still in view. */
+.campaign-kicker,.dialog-kicker { color:var(--accent); font:10px/1.6 var(--mono); letter-spacing:.1em; margin:0 0 10px; }
+.card.locked { opacity:.43; filter:saturate(.35); cursor:not-allowed; }
+.card.locked .badge-save { color:var(--muted); }
+.expedition-actions { display:flex; gap:10px; margin:-10px 0 22px; }
+.settings-only .expedition-actions { display:none; }
+#mission-tracker { position:absolute; left:22px; top:70px; padding:9px 12px; max-width:calc(100vw - 44px); color:var(--accent); background:rgba(16,27,32,.86); border-left:2px solid var(--accent); border-radius:2px; font:11px/1.6 var(--font); }
+.expedition-dialog { color:var(--ink); background:var(--bg); border:1px solid #52686c; border-radius:12px; padding:32px; width:min(780px,94vw); max-height:90vh; box-shadow:0 24px 80px #0009; overflow:auto; }
+.expedition-dialog::backdrop { background:#061013cf; }
+.expedition-dialog h2 { font-size:32px; letter-spacing:-.035em; font-weight:500; margin:4px 0 14px; line-height:1.12; }
+.expedition-dialog h3 { font-size:18px; font-weight:500; line-height:1.4; }
+.expedition-dialog p { line-height:1.65; }
+.dialog-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; }
+.dialog-copy { color:var(--muted); font-size:14px; max-width:650px; }
+.expedition-dialog input { background:#20343a; color:var(--ink); border:1px solid #597176; border-radius:5px; padding:11px 12px; font:14px var(--font); min-height:42px; min-width:0; }
+.expedition-dialog form { display:flex; flex-wrap:wrap; gap:12px; margin:20px 0; }
+.expedition-dialog form label { display:flex; flex-direction:column; gap:8px; flex:1; font-size:12px; color:var(--muted); }
+.expedition-dialog form input { width:100%; }
+#checkpoint-name { flex:1; }
+#checkpoint-list { display:flex; flex-direction:column; gap:12px; margin-top:20px; }
+.checkpoint-row { display:flex; align-items:center; gap:18px; border-top:1px solid var(--line); padding:18px 0 6px; }
+.checkpoint-fields { min-width:0; flex:1; }
+.checkpoint-fields input { width:100%; }
+.checkpoint-fields p,.checkpoint-fields small { font-size:11px; color:var(--muted); margin:8px 0 0; display:block; }
+.checkpoint-actions { display:flex; gap:6px; flex-wrap:wrap; }
+.checkpoint-actions .btn { padding:8px 12px; font-size:12px; }
+.mission-route { display:grid; grid-template-columns:repeat(8,1fr); gap:5px; margin:25px 0; padding:0; list-style:none; }
+.mission-step { padding:10px 3px; border-top:2px solid #42565c; color:var(--muted); text-align:center; font-size:10px; line-height:1.5; }
+.mission-step.current,.mission-step.active { color:var(--ink); border-color:var(--accent-2); }
+.mission-step.repaired,.mission-step.complete { border-color:var(--accent); color:var(--accent); }
+.mission-requirements { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:20px 0; padding:0; list-style:none; }
+.mission-cost { display:flex; justify-content:space-between; gap:10px; border:1px solid var(--line); border-radius:6px; padding:12px; font-size:13px; }
+.mission-cost.ready,.mission-cost.enough { color:var(--accent); }
+.mission-progress { color:var(--accent); font:11px/1.6 var(--mono); }
+.campaign-ending { padding:24px; margin-top:20px; border:1px solid #92ac70; border-radius:8px; background:linear-gradient(140deg,#304638,#1b3035); }
+.campaign-ending h3 { color:var(--accent); font-size:26px; }
+.expedition-dialog [role=status] { color:var(--accent-2); font-size:13px; line-height:1.6; }
+.expedition-dialog .dialog-actions { flex-wrap:wrap; }
+@media(max-width:760px) {
+  .expedition-dialog { padding:22px; }.checkpoint-row { flex-direction:column; align-items:stretch; gap:12px; }
+  .mission-route { grid-template-columns:repeat(4,1fr); }.mission-requirements { grid-template-columns:1fr; }
+  .expedition-dialog h2 { font-size:27px; }.expedition-actions {flex-wrap:wrap;}
+}
+@media(max-height:760px) and (min-width:761px) {
+  .expedition-dialog { padding:24px; }.mission-route { margin:16px 0; }.dialog-copy {font-size:13px;}
+  .campaign-kicker {font-size:9px;}.menu-meta {gap:2px;}.menu-head {padding-top:24px;}
+}
+.mission-step strong,.mission-step span {display:block;}.mission-step span{margin-top:4px;font-size:9px;}
+.mission-step.is-current {color:var(--ink);border-color:var(--accent-2);}
+.mission-step.is-complete,.mission-cost.is-ready {color:var(--accent);border-color:#6e8a58;}
+.expedition-dialog > .dialog-actions {position:sticky;bottom:-32px;background:var(--bg);padding:16px 0 4px;margin-bottom:-4px;border-top:1px solid var(--line);z-index:1;}
+.checkpoint-create label {flex-basis:100%!important;flex-grow:0!important;}
+@media(max-height:760px) {.expedition-dialog > .dialog-actions{bottom:-24px;}.expedition-dialog{max-height:94vh;}.expedition-dialog > .dialog-kicker{margin-bottom:6px;}.expedition-dialog h2{font-size:28px;}}

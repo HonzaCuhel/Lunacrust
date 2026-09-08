@@ -1,47 +1,27 @@
-# Packaging verification — 2026-09-05
+# Lunacrust 1.1.0 packaging verification — 2026-09-05
 
-[CI run 33927997741](https://github.com/HonzaCuhel/Lunacrust/actions/runs/33927997741) passed all five jobs for commit `14b7bfbcd4e653b45875f57eab4b257186cd268d`. The four packages were built on their native OS and architecture with the pinned lockfile: Electron 44.2.0, electron-builder 26.15.3, Playwright 1.62.1 and Node.js 24.19.0. Every native build host passed all 29 deterministic test files and comparison of 65 shipped source/assets plus application metadata.
+[CI run 33933865210](https://github.com/HonzaCuhel/Lunacrust/actions/runs/33933865210) passed all five jobs for `5042ad1c3cfc43d72c31fc5041a33a91cca39c5e`. Native builds use the pinned lockfile, Electron 44.2.0, electron-builder 26.15.3, Playwright 1.62.1 and Node.js 24. Every native build host passed all **34 test files** and exact comparison of **69 shipped source/assets** plus application metadata.
 
-## Execution coverage
-
-| Package | Installation / execution actually checked | Result |
+| Package | Installation/execution checked | Result |
 | --- | --- | --- |
-| macOS arm64 DMG / ZIP | Packaged application on Apple Silicon, macOS 15 | 20 runtime checks, graceful exit and profile cleanup pass |
-| macOS x64 DMG / ZIP | Built on Intel macOS 15; original ZIP downloaded with SHA verification and run through Rosetta on Apple Silicon | 20 runtime checks, graceful exit and profile cleanup pass; physical Intel GPU unverified |
-| Linux x64 DEB | Installed with apt on Ubuntu 24.04, then the installed `/opt/Lunacrust/lunacrust` was source-checked and launched | 20 runtime checks, graceful exit and profile cleanup pass |
-| Windows x64 NSIS | Installed silently to a disposable directory on Windows Server 2025, then the installed executable was source-checked and launched | 20 runtime checks, graceful exit and profile cleanup pass |
-| Linux x64 AppImage | Built on Ubuntu and included in artifact checksums | Construction verified; AppImage launch not tested |
+| macOS arm64 DMG/ZIP | Packaged app on Apple Silicon, macOS 15 | 22 runtime checks, graceful exit and profile cleanup pass |
+| macOS x64 DMG/ZIP | Built on Intel macOS 15; original SHA-verified ZIP run through Rosetta on Apple Silicon | 22 runtime checks, graceful exit and profile cleanup pass |
+| Linux x64 DEB | Installed with apt on Ubuntu 24.04; installed application source-checked and launched | 22 runtime checks, graceful exit and profile cleanup pass |
+| Windows x64 NSIS | Installer run silently on Windows Server 2025; installed executable source-checked and launched | 22 runtime checks, graceful exit and profile cleanup pass |
+| Linux x64 AppImage | Built on Ubuntu and hashed | Construction verified; launch not tested |
 
-Linux and Windows used a virtual/software graphics environment, the supported minimum window size, render distance 3 and resolution scale 0.75. Chromium sandboxing remained enabled; no `--no-sandbox` workaround was used. These checks establish startup and playable-world initialization, not consumer GPU performance, Windows 10/11 compatibility or router/firewall behavior.
+Linux/Windows use virtual/software graphics with Chromium sandboxing enabled, render distance 3 and resolution scale 0.75. Intel execution uses Rosetta because the hosted Intel VM cannot provide WebGL2; this does not verify a physical Intel GPU. No Vulkan loader was added and no sandbox was disabled. Consumer GPU performance, Windows 10/11 and actual router/firewall behavior are not established by these checks.
 
-The 20 runtime checks cover the packaged ASAR, application identity, excluded prototype audio/developer hooks, font/dependency notices, sandbox and context isolation, isolated profile, runtime version, absence of Node globals, WebGL2, all three bundled WAV tracks, save/load/delete, worker-streamed terrain and survival starter kit. Success is printed only after a clean process exit and removal of the temporary profile. Renderer exceptions, forced termination and persistent file locks fail verification. Full local evidence is in `output/ci-native-passing.log`, with the public workflow linked above as the durable build record.
+Runtime checks cover the ASAR, identity, excluded prototype audio/probe hooks, notices, sandbox and context isolation, isolated profile, runtime version, no Node globals, WebGL2, all three WAV tracks, desktop save/load/delete, worker terrain, starter kit, Earth campaign identity and a named campaign checkpoint round trip. A forced termination, renderer exception or persistent temporary-profile lock fails verification.
 
 ## Artifact integrity
 
-The seven binary downloads in `dist/` are the native CI artifacts, verified against each job's `SHA256SUMS.txt` after download. The final `dist/SHA256SUMS.txt` covers those seven files and the source archive. Documentation-only changes after the build do not change the 65 shipped source/assets; the exported source archive is checked byte-for-byte against the final checkout.
+Downloads are collected under `dist/1.1.0/`. Each is checked against its native job's SHA256SUMS before collection; the final manifest covers seven binaries and the source archive. macOS DMG checks additionally verify the image checksum and read-only mount, executable architecture, Applications symlink, all five runtime notices, exact source equality and an ASAR matching the paired ZIP. No user application is overwritten.
 
-The macOS DMGs additionally undergo checksum verification and read-only mount checks: application executable architecture, Applications symlink, complete resource notices, source equality, and the mounted ASAR matching the original ZIP. No installed application in `/Applications` is overwritten. See `output/native-ci-integrity.json` and `output/native-ci-dmg-verification.json` for local receipts.
+Source-only documentation/test updates after the build do not alter the 69 shipped runtime files. The final source archive is compared with the final checkout. Local receipts are under `output/releases/1.1.0/`; the public workflow above is the durable native execution record. The earlier 1.0 candidate remains separate.
 
-Earlier local packages were built and checked on macOS 26.2 / Apple Silicon, including x64 execution through Rosetta, all 20 runtime checks on both Mac variants and both DMG mount checks. Those pre-CI installers are retained separately under `output/pre-ci-artifacts/`; they are not the current release downloads. Existing local unpacked applications may still be from that earlier build.
+## Distribution boundaries
 
-## Problems reproduced and resolved
+macOS requires 13 or newer. macOS/Windows filenames explicitly include `-unsigned`; macOS is not notarized. Signing needs publisher credentials, and hashes do not prove publisher identity. See RELEASING.md. The AppImage is for systems supporting Chromium's sandbox; Ubuntu users should prefer the tested DEB.
 
-- A clean `npm ci` initially failed on macOS because Electron 44 downloads its runtime lazily, after our preparation hook expected it. The preparation tool now invokes the pinned install script, validates the executable and repairs the framework link only when needed. Clean-install, repeat-install and failure-transparency tests pass on the native hosts.
-- Tests used a Mac-specific temporary directory and non-portable URL path conversion. They now use a project output directory and `fileURLToPath`; all 29 test files pass on every build host.
-- Windows ASAR lookup required native separators. Source and license checks now normalize paths at the appropriate boundary and pass against the installed package.
-- The Windows runtime passed its gameplay checks but cleanup raced database locks. The verifier now waits for graceful process exit, bounds failure cleanup and retries transient filesystem locks. The final installed run exits successfully and removes its profile.
-- The hosted Intel VM failed to create WebGL2. Locally, its SwiftShader flags reproduced a missing Vulkan-loader failure, and a diagnostic copy with the loader proved that dependency. The distributed application was not modified for this comparison. CI now verifies the original Intel ZIP through Rosetta in a separately named dependent job. Physical Intel GPU execution remains unverified.
-
-## Remaining boundaries
-
-The local keychain has no Developer ID Application distribution identity. macOS and Windows downloads are explicitly `-unsigned`; macOS is not notarized. Signing and notarization require the owner's credentials and a successful signing run. Checksums do not establish publisher identity. See `RELEASING.md`.
-
-The three-process LAN and eight-player protocol-capacity probes ran on one computer. A physical two-computer Wi-Fi session, firewall prompts, target GPU performance and intended consumer OS versions remain outstanding. The AppImage is an alternative for systems supporting Chromium's sandbox; Ubuntu users should prefer the installed-and-tested DEB.
-
-An earlier Ubuntu 24.04.4 VPS preflight found that unprivileged user-namespace mapping failed with `EPERM`; it stopped before upload, installation or launch and changed no host settings. That unpacked-application prerequisite failure was not an installer defect. The later native CI DEB installation and sandboxed runtime check supersede the previous lack of native Linux execution evidence.
-
-## Packaging and license safeguards
-
-The builder uses an immutable private input snapshot and rejects packages that no longer match the checkout. This prevents the reproduced ASAR corruption caused by files changing between archive-header generation and data streaming. Invalid provisional files were replaced.
-
-The lunar wayfinder icon and WAV score are original generated assets. Space Grotesk and its full OFL are local. Prototype MP3s and developer probe hooks are excluded. `LICENSE`, `THIRD_PARTY_NOTICES.md`, Three.js' MIT license, Electron's MIT license and platform-specific Chromium notices are included and checked. See `ASSET_PROVENANCE.md` for the limits of the provenance and preliminary name review.
+The source build retains the immutable packaging input snapshot, platform-correct Chromium notices and clean Electron installation safeguards. Game art, the wayfinder icon, soundtrack and campaign text are original source-generated/authored material; Space Grotesk's OFL and dependency licenses are included. See ASSET_PROVENANCE.md for the precise provenance and legal-review limits.

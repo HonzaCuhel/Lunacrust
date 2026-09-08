@@ -51,7 +51,8 @@ export async function listGuests() {
 
 /** Planet saves only - the menu must not light up a card for a visited world. */
 export async function listOwnWorlds() {
-  return (await listWorlds()).filter((id) => !id.startsWith('guest-'));
+  return (await listWorlds()).filter((id) =>
+    !id.startsWith('guest-') && !id.startsWith('checkpoint-') && id !== 'campaign-current');
 }
 
 const SETTINGS = 'spacemc:settings';

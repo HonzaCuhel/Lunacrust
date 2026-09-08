@@ -83,7 +83,7 @@ export class Player {
     const len = Math.hypot(mf, ms);
     if (len > 0) { mf /= len; ms /= len; }
 
-    this.sprinting = input.sprint && mf > 0;
+    this.sprinting = !!input.sprint && mf > 0 && (this.flying || !input.sneak);
     let speed = this.walkSpeed * (this.sprinting ? 1.62 : 1) * (input.sneak && this.onGround && !this.flying ? 0.36 : 1);
     if (this.flying) speed = this.sprinting ? 26 : 11;
     else if (this.inLiquid) speed *= 0.62;

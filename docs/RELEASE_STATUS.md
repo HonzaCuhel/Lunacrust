@@ -1,31 +1,48 @@
-# Lunacrust 1.0.0 — release candidate
+# Lunacrust 1.1.0 — release candidate
 
-This is an MIT-licensed release candidate with successful native builds and installed-application checks. [CI run 33927997741](https://github.com/HonzaCuhel/Lunacrust/actions/runs/33927997741) passed all five jobs for build commit `14b7bfbcd4e653b45875f57eab4b257186cd268d`. The source and workflow are in [HonzaCuhel/Lunacrust](https://github.com/HonzaCuhel/Lunacrust). Installer files are available in `dist/`; macOS and Windows downloads are unsigned and macOS is not notarized. A public stable release has not been published.
+**The Last Signal** adds an original survival campaign with eight chapters and an ending. Start on Earth, gather and craft relay supplies, unlock the Moon, Mars, Venus, Europa, Io, Titan and Jupiter, then restore the final signal. Creative opens every destination. Up to 50 named checkpoints preserve complete expeditions, including story progress and all visited worlds. Shift or Ctrl sprints forward; C sneaks.
+
+[Native CI run 33933865210](https://github.com/HonzaCuhel/Lunacrust/actions/runs/33933865210) passed all five jobs for build commit `5042ad1c3cfc43d72c31fc5041a33a91cca39c5e`. Final downloads are collected in `dist/1.1.0/`, with `SHA256SUMS.txt` and matching source. macOS and Windows installers are unsigned; macOS is not notarized. A public stable release has not been published.
+
+## Stable-release decision
+
+The supported verdict is **release candidate / public beta**, not a polished stable
+release. A bounded source audit found no campaign soft-lock; recipe inputs and
+harvest tiers support the ordered progression. Automated completion injects
+resources and does not establish real play time, balance or first-time usability.
+
+Two observed onboarding issues remain in the 1.1 binaries:
+
+- The Fabricator shows an unaffordable recipe's output but no ingredient preview.
+  Earth progression needs a Stone Pickaxe: three rocks and two rods. This is a
+  discoverability gap; the item can be crafted.
+- The in-game field guide does not qualify flight and R-respawn as Creative-only;
+  the README controls do. Those keys are correctly gated in the game.
+
+The campaign is driven by journal chapters and resource-paid menu repairs. It
+does not contain physical relay encounters. Death keeps equipment and progress;
+these are intentional forgiving-survival mechanics, not evidence of a harsh
+survival simulation.
+
+Public `main` and the candidate development branch have not yet been merged.
+Both desktop releases remain drafts. The promotional website presents the 1.1
+browser candidate and clearly distinguishes browser single-player from desktop
+LAN. Its trailer uses actual Creative camera footage and actual product screens.
 
 ## Verified behavior
 
-- **29/29 deterministic test files pass on all four native build hosts.** This includes crafting/progression across all eight planets, survival, body collision, inventory, creature AI/rendering, network framing/session ownership, settings validation, desktop security/storage and clean Electron installation.
-- **20/20 browser UI checks pass** at 1440×900 and minimum 960×600. Settings apply live and persist through restart; restore defaults, move, hotbar, inventory, Escape, save/continue, cancellation and explicit confirmation of world replacement work. No console/runtime/resource errors in this run. Evidence: `output/ui/report.json`, screenshots in `output/ui/`.
-- **38/38 native survival checks pass**, including life support, oxygen, equipment, combat, crafting, smelting and saves. The harness waits for observable outcomes rather than assuming a fixed rendering speed.
-- **Native mechanics probe passes across all eight worlds**: grounded spawn, walking, jumping, mining and placement; chunk unload/reload persistence, step-up along both axes and palette controls also pass.
-- **24/24 real LAN integration checks pass**, using three separate Electron44 processes and isolated temporary profiles. Automatic UDP discovery, joining over the Mac's LAN address, direct third join, bidirectional and simultaneous conflicting edits, shared creatures/combat, single-grant loot pickup, exclusive smelter access, smelting while host menus are open, world resync, namespaced guest saves, disconnect/rejoin and host-close behavior. No skipped checks or renderer exceptions. Evidence: `artifacts/lan/checks.json`.
-- Native LAN lobby and host roster inspected at 1440×900 and 960×600: discovered games, direct-connect controls and host address are visible, keyboard Enter joins, and both clients report zero runtime errors. Evidence: `output/ui/lan-layout-checks.json`.
-- **13/13 packaged-host capacity checks pass** with seven headless game sessions over actual TCP. The host admits eight players including itself, refuses the ninth, broadcasts chat and movement, converges after 70 edit requests, and admits a replacement with the edited world after a slot is freed. The eight-player roster was visually inspected. This is one renderer and seven protocol clients on one computer, not eight rendering computers or a long-duration hardware load test. Evidence: `output/capacity/checks.json` and `eight-player-roster.png`.
-- Creature integration: natural spawning on actual generated terrain for all eight planets; real game slam decreases health20→14; targeting kill drops loot; zero browser JavaScript errors. Evidence: `output/creatures/gameplay-result.json` and `docs/creatures.png`.
-- Asset review: old unverified MP3s excluded; reproducible original WAV compositions and local OFL font; license notices included. See `ASSET_PROVENANCE.md`.
-- `npm audit` reported zero known dependency vulnerabilities after updating to pinned Electron44.2.0 / builder26.15.3 / Playwright1.62.1. This is the tool's advisory database result, not a proof of security.
+- **34/34 deterministic test files pass on all four native build hosts.** New tests cover campaign locks/completion, actual terrain/recipe material reachability, atomic resource payment, browser and desktop checkpoints, world travel inventory preservation, sprint behavior and simulation isolation during persistence.
+- **98 browser campaign checks pass**, with zero runtime/resource errors. Includes complete eight-world travel and ending, paid relay repairs, direct lock enforcement, checkpoint creation/rename/delete/rollback, visited terrain and current equipment retention, save/reload, creative isolation, quota failure rollback and actual Shift+W movement measured against walking. Resources are injected to skip mining time; separate domain tests verify material reachability. This is not a timed organic survival playthrough.
+- **26 browser transaction checks pass**, including delayed/failed writes, simulation/input freeze, competing repair/travel/restore/save/native-close actions, exactly one replacement entry, stale death-card cleanup, and explicit confirmation before replacing an unreadable campaign.
+- **20 browser shell checks pass**: settings live/persisted/defaults, movement, inventory, pause, save/continue and replacement confirmation. Campaign, checkpoint and ending dialogs were visually checked at 1440×900 and 960×600. The installed web-game skill client also completed two input/screenshot rounds.
+- **24 actual three-process LAN checks pass** after the new join/transition locking: discovery, shared edits/creatures/loot/smelters, guest isolation, reconnect and host closure. Each process uses a temporary profile on one Mac.
+- **25 campaign LAN checks pass** in two real Electron instances: relay repair while connected, a desktop checkpoint, canceled/confirmed travel, guest return to orbit, Moon rehosting/rejoin, equipment transfer and byte-identical guest-owned campaign/creative saves. Both processes exit gracefully and their test profiles are removed. Receipt: `output/campaign-lan-specific/report.json`.
+- **22 packaged runtime checks pass on four execution targets**: native Apple Silicon, installed Ubuntu DEB, installed Windows NSIS and the original Intel ZIP through Rosetta. Includes source/asset notices, sandboxed WebGL2, local audio, world startup, starter kit, campaign identity, desktop checkpoint persistence, graceful process exit and profile cleanup.
 
-## Artifacts and platform verification
+Local receipts: `output/campaign-unit-tests.log`, `output/ui/report.json`, `output/playwright/campaign/report.json`, `output/playwright/transactions/report.json`, `artifacts/lan/checks.json`, and `output/releases/1.1.0/native-ci.log`.
 
-Seven binary downloads were built in CI: macOS arm64 and x64 DMG/ZIP, Linux AppImage/DEB, and Windows NSIS. All four platform builds passed exact checks of 65 shipped source/assets plus runtime metadata. The Apple Silicon app, installed Ubuntu DEB, installed Windows NSIS app, and unchanged Intel ZIP through Rosetta each passed all 20 runtime checks, graceful process shutdown and temporary-profile removal. See `PACKAGING_VERIFICATION.md`, `dist/SHA256SUMS.txt` and `RELEASING.md` for artifact integrity and reproduction.
+## Downloads and boundaries
 
-macOS requires 13 or newer. CI used macOS 15, Ubuntu 24.04 and Windows Server 2025. Linux and Windows runtime checks used software WebGL with the Chromium sandbox enabled. The hosted Intel VM could not create WebGL2, so its original ZIP was tested through Rosetta on Apple Silicon in a separately named dependent job. This does not verify a physical Intel GPU. The AppImage was built and hashed but was not launched; Ubuntu users should prefer the installed-and-tested DEB.
+Seven binaries: Apple Silicon and Intel DMG/ZIP, Windows x64 NSIS, Linux x64 DEB/AppImage. macOS requires 13 or newer. CI used macOS 15, Windows Server 2025 and Ubuntu 24.04. Windows/Linux used software WebGL with the Chromium sandbox enabled. The hosted Intel GPU could not create WebGL2, so the unchanged Intel ZIP is tested through Rosetta on Apple Silicon. The AppImage is built and hashed but has not had a runtime launch test; Ubuntu users should prefer the installed-and-tested DEB.
 
-## Release gates still requiring external evidence
-
-- Developer signing and Apple notarization for seamless downloads. Local macOS/Windows artifacts are explicitly named `-unsigned`.
-- A physical two-computer Wi-Fi session, platform firewall prompts and the eight-player limit under real load. Three local processes validate networking code, not all routers and operating systems.
-- Physical target GPUs and intended consumer OS versions, especially Windows 10/11 and an Intel Mac. Hosted software rendering and Rosetta do not establish performance on those devices.
-- Formal trademark and jurisdiction-specific legal clearance if required. Preliminary web/asset checks cannot guarantee freedom from claims.
-
-The browser preview is single-player. LAN assumes trusted peers; no encrypted internet matchmaking, dedicated remote server or anti-cheat promise. The host continues simulating while menus are open. License and provenance checks are documented in `ASSET_PROVENANCE.md`.
+Physical two-computer Wi-Fi, firewall prompts, consumer GPUs/OS versions, signing/notarization and formal trademark clearance remain outside this automated evidence. Source and original assets remain MIT with third-party notices. See [packaging verification](PACKAGING_VERIFICATION.md), [provenance](ASSET_PROVENANCE.md) and [release instructions](RELEASING.md).

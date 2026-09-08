@@ -50,6 +50,7 @@ export class Game {
     this.clock = new THREE.Clock();
     this.running = false;
     this.paused = false;
+    this.persistenceBusy = false;
     this.keys = new Set();
     this.mouse = { left: false, right: false };
     this.hotbar = [];
@@ -177,7 +178,7 @@ export class Game {
   // ------------------------------------------------------------------- input
   bindInput() {
     this._onKeyDown = (e) => {
-      if (!this.running || this.paused) return;
+      if (!this.running || this.paused || this.dead || this.persistenceBusy) return;
       const code = e.code;
       if (code === 'Escape') return;              // handled by the shell
       this.keys.add(code);
@@ -202,16 +203,19 @@ export class Game {
         e.stopImmediatePropagation();
         this.hooks.onInventory?.();
       }
-      if (['KeyW','KeyA','KeyS','KeyD','Space','ShiftLeft','ShiftRight','Tab'].includes(code)) e.preventDefault();
+      if (['KeyW','KeyA','KeyS','KeyD','KeyC','ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
+        'Space','ShiftLeft','ShiftRight','ControlLeft','ControlRight','Tab'].includes(code)) e.preventDefault();
     };
     this._onKeyUp = (e) => this.keys.delete(e.code);
     this._onMouseDown = (e) => {
-      if (!this.pointerLocked || this.dead || this.paused) return;
+      if (!this.pointerLocked || this.dead || this.paused || this.persistenceBusy) return;
       if (e.button === 0) this.mouse.left = true;
       if (e.button === 2) {
         // Right-click is overloaded: open a station, eat/use what you're holding,
         // or fall through to placing a block. Sneak forces the place.
-        const sneaking = this.keys.has('ShiftLeft') || this.keys.has('ShiftRight');
+        const sneaking = this.player.flying
+          ? this.keys.has('ShiftLeft') || this.keys.has('ShiftRight')
+          : this.keys.has('KeyC');
         if (!sneaking && this.mode === 'survival' && this.target && BLOCKS[this.target.id].interact) {
           this.openStation(BLOCKS[this.target.id].interact, this.target);
           return;
@@ -227,19 +231,20 @@ export class Game {
       if (e.button === 2) this.mouse.right = false;
     };
     this._onMouseMove = (e) => {
-      if (!this.pointerLocked || this.paused) return;
+      if (!this.pointerLocked || this.paused || this.persistenceBusy) return;
       const s = 0.0022 * this.settings.sensitivity;
       this.player.look(e.movementX, (this.settings.invertY ? -1 : 1) * e.movementY, s);
     };
     this._onWheel = (e) => {
-      if (!this.pointerLocked || this.paused) return;
+      if (!this.pointerLocked || this.paused || this.persistenceBusy) return;
       this.selectSlot((this.slot + (e.deltaY > 0 ? 1 : -1) + this.hotbar.length) % this.hotbar.length);
     };
     this._onPointerLock = () => {
       this.pointerLocked = document.pointerLockElement === this.canvas;
       if (!this.pointerLocked && this.running && !this.paused && !this.inventoryOpen) this.hooks.onPointerLost?.();
-      if (!this.pointerLocked) { this.mouse.left = this.mouse.right = false; this.keys.clear(); }
+      if (!this.pointerLocked) this.clearInput();
     };
+    this._onBlur = () => this.clearInput();
 
     document.addEventListener('keydown', this._onKeyDown);
     document.addEventListener('keyup', this._onKeyUp);
@@ -248,7 +253,15 @@ export class Game {
     document.addEventListener('mousemove', this._onMouseMove);
     document.addEventListener('wheel', this._onWheel, { passive: true });
     document.addEventListener('pointerlockchange', this._onPointerLock);
+    window.addEventListener('blur', this._onBlur);
     this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+
+  clearInput() {
+    this.keys.clear();
+    this.mouse.left = this.mouse.right = false;
+    this.mining = null;
+    if (this.player) this.player.sprinting = false;
   }
 
   requestPointerLock() {
@@ -412,6 +425,12 @@ export class Game {
       this.fps = Math.round(this._frames / this._fpsT);
       this._frames = 0; this._fpsT = 0;
     }
+    // Commit/rollback needs stable local inventory and survival state even on
+    // a LAN host, where an ordinary pause intentionally leaves the world running.
+    if (this.persistenceBusy) {
+      this.renderer.render(this.scene, this.camera);
+      return;
+    }
     if (this.paused && !this.net) {
       // A smelter has to keep burning while you watch it - the screen pauses the
       // player, not the world's machines.
@@ -424,6 +443,7 @@ export class Game {
   };
 
   step(dt) {
+    if (this.persistenceBusy) return;
     const p = this.player;
 
     if (!this.spawned) {
@@ -453,12 +473,18 @@ export class Game {
       left: this.keys.has('KeyA') || this.keys.has('ArrowLeft'),
       right: this.keys.has('KeyD') || this.keys.has('ArrowRight'),
       jump: this.keys.has('Space'),
-      sneak: this.keys.has('ShiftLeft') || this.keys.has('ShiftRight'),
-      sprint: this.keys.has('ControlLeft') || this.keys.has('ControlRight'),
+      // Shift is the ground sprint shortcut; in creative flight it still descends.
+      sneak: p.flying
+        ? this.keys.has('ShiftLeft') || this.keys.has('ShiftRight')
+        : this.keys.has('KeyC'),
+      sprint: this.keys.has('ControlLeft') || this.keys.has('ControlRight')
+        || (!p.flying && (this.keys.has('ShiftLeft') || this.keys.has('ShiftRight'))),
     };
 
     const before = p.onGround;
-    if (this.dead) { input.forward = input.back = input.left = input.right = input.jump = false; }
+    if (this.dead || this.paused) {
+      input.forward = input.back = input.left = input.right = input.jump = input.sneak = input.sprint = false;
+    }
     p.update(dt, input, this.world);
 
     // Falling out of the world: a graded hazard rather than a silent teleport.
@@ -806,8 +832,7 @@ export class Game {
           break;
         case 'death':
           this.dead = true;
-          this.mouse.left = this.mouse.right = false;
-          this.mining = null;
+          this.clearInput();
           // Hand back anything the player was holding or laying out before the
           // death screen takes over, or it vanishes with the grid object.
           if (this.openScreenKind) this.closeScreen();
@@ -1271,6 +1296,7 @@ export class Game {
       chunks: this.world.stats.chunks,
       tris: this.world.stats.tris,
       flying: p.flying,
+      sprinting: p.sprinting,
       onGround: p.onGround,
       inLiquid: p.inLiquid,
       speed: Math.hypot(p.vel.x, p.vel.z),
@@ -1308,7 +1334,7 @@ export class Game {
 
   setPaused(v) {
     this.paused = v;
-    if (v) { this.keys.clear(); this.mouse.left = this.mouse.right = false; this.mining = null; }
+    if (v) this.clearInput();
     if (!v) this.clock.getDelta();
   }
 
@@ -1378,6 +1404,7 @@ export class Game {
     }
     if (full) {
       window.removeEventListener('resize', this.onResize);
+      window.removeEventListener('blur', this._onBlur);
       document.removeEventListener('keydown', this._onKeyDown);
       document.removeEventListener('keyup', this._onKeyUp);
       document.removeEventListener('mousedown', this._onMouseDown);

@@ -1,0 +1,146 @@
+<template>
+  <style>
+    @font-face {
+      font-family: 'Space Grotesk';
+      src: url('/assets/SpaceGrotesk.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 300 700;
+      font-display: block;
+    }
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #101715;
+      font-family: 'Space Grotesk';
+    }
+    [class~="scene-05-lockup-ground"] {
+      position: absolute;
+      inset: 0;
+      background: #d6ef8c;
+    }
+    [class~="scene-05-lockup-landscape"] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 24.074074cqh;
+      overflow: hidden;
+      border-top: 0.21cqw solid #101715;
+      box-sizing: border-box;
+    }
+    [class~="scene-05-lockup-image"] {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 78%;
+    }
+    [class~="scene-05-lockup-header"] {
+      position: absolute;
+      left: 5cqw;
+      right: 5cqw;
+      top: 6.5cqh;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 2cqw;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+    [class~="scene-05-lockup-kicker"] {
+      margin: 0;
+      font-size: 1.46cqw;
+      line-height: 1.2;
+    }
+    [class~="scene-05-lockup-release"] {
+      margin: 0;
+      font-size: 1.25cqw;
+      line-height: 1.2;
+    }
+    [class~="scene-05-lockup-title-mask"] {
+      position: absolute;
+      left: 11cqw;
+      right: 11cqw;
+      top: 26cqh;
+      overflow: hidden;
+      padding: 0.32cqw 0 0.58cqw;
+    }
+    [class~="scene-05-lockup-title"] {
+      margin: 0;
+      font-size: 8.8541667cqw;
+      font-weight: 700;
+      line-height: 0.96;
+      letter-spacing: -0.045em;
+      white-space: nowrap;
+    }
+    [class~="scene-05-lockup-tagline"] {
+      position: absolute;
+      left: 11cqw;
+      top: 45cqh;
+      margin: 0;
+      font-size: 2.3958333cqw;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    [class~="scene-05-lockup-action"] {
+      position: absolute;
+      left: 11cqw;
+      top: 59cqh;
+      margin: 0;
+      font-size: 1.7708333cqw;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.06em;
+    }
+    [class~="scene-05-lockup-address"] {
+      position: absolute;
+      left: 11cqw;
+      top: 65cqh;
+      margin: 0;
+      font-size: 1.4583333cqw;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+  </style>
+  <div data-hf-id="hf-h0ly" id="root" data-composition-id="scene-05-lockup" data-duration="7" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-kn4z" id="scene-05-lockup-ground" class="clip scene-05-lockup-ground" data-start="0" data-duration="7" data-track-index="0"></div>
+    <div data-hf-id="hf-b452" id="scene-05-lockup-landscape" class="clip scene-05-lockup-landscape" data-start="0" data-duration="7" data-track-index="1">
+      <img data-hf-id="hf-homz" id="scene-05-lockup-landscape-image" class="scene-05-lockup-image" src="/assets/world-europa.jpg" alt="Actual Europa landscape captured in Lunacrust">
+    </div>
+    <header data-hf-id="hf-ttlq" class="scene-05-lockup-header">
+      <p data-hf-id="hf-vpj6" class="scene-05-lockup-kicker">OPEN SOURCE · MADE TO EXPLORE</p>
+      <p data-hf-id="hf-4koh" class="scene-05-lockup-release">RELEASE CANDIDATE 1.1 · MIT LICENSE</p>
+    </header>
+    <div data-hf-id="hf-62da" class="scene-05-lockup-title-mask"><h1 data-hf-id="hf-6ecw" class="scene-05-lockup-title">LUNACRUST</h1></div>
+    <p data-hf-id="hf-df0o" class="scene-05-lockup-tagline">Eight worlds. One last signal.</p>
+    <p data-hf-id="hf-7egs" class="scene-05-lockup-action">PLAY THE BROWSER DEMO</p>
+    <p data-hf-id="hf-m0x8" class="scene-05-lockup-address">honzacuhel.github.io/Lunacrust</p>
+  </div>
+  <script src="/assets/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="scene-05-lockup"]');
+      const timeline = gsap.timeline({ paused: true });
+      timeline.fromTo(root.querySelector('[class="scene-05-lockup-title"]'),
+        { yPercent: 108 }, { yPercent: 0, duration: 0.65, ease: 'power3.out' }, 0);
+      timeline.fromTo(root.querySelector('[class="scene-05-lockup-tagline"]'),
+        { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 0.5);
+      timeline.fromTo(root.querySelector('[class="scene-05-lockup-action"]'),
+        { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 0.74);
+      timeline.fromTo(root.querySelector('[class="scene-05-lockup-address"]'),
+        { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.28, ease: 'power2.out' }, 0.92);
+      // Hold the complete lockup through the final frame. The solid canvas,
+      // landscape ribbon and top labels are already visible at local time 0.
+      timeline.to({}, { duration: 7 }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['scene-05-lockup'] = timeline;
+    })();
+  </script>
+</template>

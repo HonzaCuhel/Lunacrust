@@ -206,6 +206,9 @@ test('liquidAt samples the block at the given point', () => {
 // extraction (captured from the literal pre-extraction player.js, byte-for-
 // byte identical to the delegated version at every one of the 60 steps and
 // every planet tried - see the mob-core report for how this table was made).
+// The sprint-controls update excludes simultaneous sprint+sneak from this
+// collision/gravity fixture. Rows were recaptured from the original HEAD Player
+// with that normalized input; sprint.test.mjs covers conflicting-key priority.
 function regressionWorld() {
   return {
     getBlock(x, y, z) {
@@ -219,35 +222,35 @@ function regressionWorld() {
 function inputAt(i) {
   return {
     forward: true, back: false, left: false, right: (i % 23) === 0,
-    sprint: (i % 7) < 3, sneak: (i % 31) === 0, jump: (i % 10) === 0,
+    sprint: (i % 7) < 3 && (i % 31) !== 0, sneak: (i % 31) === 0, jump: (i % 10) === 0,
   };
 }
 const round = (v) => Math.round(v * 1e9) / 1e9;
 
 const WALK_TABLE = {
   earth: [
-    { step: 9, x: 0.552688072, y: 11.0001, z: -2.093281698, vx: 0.00016576, vy: 0, vz: -7.272356979, onGround: true, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.363617849, landImpact: 0 },
-    { step: 19, x: 0.552708005, y: 11.9185, z: -4.915437038, vx: 0.000020984, vy: -5.2264, vz: -5.557374974, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.277868749, landImpact: 0 },
-    { step: 29, x: 0.815747252, y: 11.0001, z: -7.658415765, vx: 0.012950002, vy: 0, vz: -6.999448115, onGround: true, stepOffset: 0, impactSpeed: 8.3656, justLanded: true, distance: 0.349973005, landImpact: 0 },
-    { step: 39, x: 0.817304488, y: 11.9185, z: -10.931228778, vx: 0.001639358, vy: -5.2264, vz: -6.148804563, onGround: false, stepOffset: 0, impactSpeed: 8.3656, justLanded: true, distance: 0.307440239, landImpact: 0 },
-    { step: 49, x: 0.976004247, y: 11.0001, z: -13.780046526, vx: 0.124905172, vy: 0, vz: -6.286285108, onGround: true, stepOffset: 0, impactSpeed: 8.3656, justLanded: true, distance: 0.314376294, landImpact: 0 },
-    { step: 59, x: 0.991024074, y: 11.9185, z: -17.029397117, vx: 0.015811915, vy: -5.2264, vz: -6.277537073, onGround: false, stepOffset: 0, impactSpeed: 8.3656, justLanded: true, distance: 0.313877849, landImpact: 0 },
+    { step: 9, x: 0.532523501, y: 11.0001, z: -2.073117127, vx: 0.000102321, vy: 0, vz: -7.272293541, onGround: true, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.363614677, landImpact: 0 },
+    { step: 19, x: 0.532535805, y: 11.9185, z: -4.895264838, vx: 0.000012953, vy: -5.2264, vz: -5.557366943, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.277868347, landImpact: 0 },
+    { step: 29, x: 0.795573933, y: 11.0001, z: -7.638242445, vx: 0.012949993, vy: 0, vz: -6.999448106, onGround: true, stepOffset: 0, impactSpeed: 8.3656, justLanded: true, distance: 0.349973004, landImpact: 0 },
+    { step: 39, x: 0.797131167, y: 11.9185, z: -10.911055457, vx: 0.001639357, vy: -5.2264, vz: -6.148804562, onGround: false, stepOffset: 0, impactSpeed: 8.3656, justLanded: true, distance: 0.307440239, landImpact: 0 },
+    { step: 49, x: 0.955830927, y: 11.0001, z: -13.759873205, vx: 0.124905172, vy: 0, vz: -6.286285108, onGround: true, stepOffset: 0, impactSpeed: 8.3656, justLanded: true, distance: 0.314376294, landImpact: 0 },
+    { step: 59, x: 0.970850753, y: 11.9185, z: -17.009223796, vx: 0.015811915, vy: -5.2264, vz: -6.277537073, onGround: false, stepOffset: 0, impactSpeed: 8.3656, justLanded: true, distance: 0.313877849, landImpact: 0 },
   ],
   europa: [
-    { step: 9, x: 0.552688072, y: 11.0001, z: -2.093281698, vx: 0.00016576, vy: 0, vz: -7.272356979, onGround: true, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.363617849, landImpact: 0 },
-    { step: 19, x: 0.552708005, y: 14.9785, z: -4.915437038, vx: 0.000020984, vy: 7.0136, vz: -5.557374974, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.277868749, landImpact: 0 },
-    { step: 29, x: 0.708508606, y: 17.9089, z: -7.726569541, vx: 0.293659307, vy: 4.9176, vz: -5.810289928, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.290885307, landImpact: 0 },
-    { step: 39, x: 0.786196071, y: 19.7913, z: -10.619488032, vx: 0.081784404, vy: 2.8216, vz: -5.748875861, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.287472879, landImpact: 0 },
-    { step: 49, x: 0.872935474, y: 20.6257, z: -13.465582986, vx: 0.288771193, vy: 0.7256, vz: -5.631438423, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.281941871, landImpact: 0 },
-    { step: 59, x: 0.94932979, y: 20.4121, z: -16.37348169, vx: 0.080423059, vy: -1.3704, vz: -5.918078322, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.295931237, landImpact: 0 },
+    { step: 9, x: 0.532523501, y: 11.0001, z: -2.073117127, vx: 0.000102321, vy: 0, vz: -7.272293541, onGround: true, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.363614677, landImpact: 0 },
+    { step: 19, x: 0.532535805, y: 14.9785, z: -4.895264838, vx: 0.000012953, vy: 7.0136, vz: -5.557366943, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.277868347, landImpact: 0 },
+    { step: 29, x: 0.688334282, y: 17.9089, z: -7.706395217, vx: 0.293657071, vy: 4.9176, vz: -5.810287691, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.29088519, landImpact: 0 },
+    { step: 39, x: 0.766021155, y: 19.7913, z: -10.599313117, vx: 0.081783781, vy: 2.8216, vz: -5.748875238, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.287472847, landImpact: 0 },
+    { step: 49, x: 0.852760394, y: 20.6257, z: -13.445407905, vx: 0.28877102, vy: 0.7256, vz: -5.63143825, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.281941862, landImpact: 0 },
+    { step: 59, x: 0.929154664, y: 20.4121, z: -16.353306563, vx: 0.080423011, vy: -1.3704, vz: -5.918078274, onGround: false, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.295931235, landImpact: 0 },
   ],
   jupiter: [
-    { step: 9, x: 0.552688072, y: 11.0001, z: -2.093281698, vx: 0.00016576, vy: 0, vz: -7.272356979, onGround: true, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.363617849, landImpact: 0 },
-    { step: 19, x: 0.552706522, y: 11.0001, z: -4.847787814, vx: 0.000004335, vy: 0, vz: -4.797804747, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.239890237, landImpact: 0.028947619 },
-    { step: 29, x: 0.687752161, y: 11.0001, z: -7.562509226, vx: 0.060672317, vy: 0, vz: -7.062888519, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.353157456, landImpact: 0.028947619 },
-    { step: 39, x: 0.694505278, y: 11.0001, z: -10.732943134, vx: 0.001586899, vy: 0, vz: -4.921660242, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.246083025, landImpact: 0.028947619 },
-    { step: 49, x: 0.740989821, y: 11.0001, z: -13.353263103, vx: 0.054998976, vy: 0, vz: -6.395901401, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.319806893, landImpact: 0.028947619 },
-    { step: 59, x: 0.747111468, y: 11.0001, z: -16.605172343, vx: 0.001438511, vy: 0, vz: -5.571720154, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.278586017, landImpact: 0.028947619 },
+    { step: 9, x: 0.532523501, y: 11.0001, z: -2.073117127, vx: 0.000102321, vy: 0, vz: -7.272293541, onGround: true, stepOffset: 0, impactSpeed: 0, justLanded: true, distance: 0.363614677, landImpact: 0 },
+    { step: 19, x: 0.53253489, y: 11.0001, z: -4.827616182, vx: 0.000002676, vy: 0, vz: -4.797803087, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.239890154, landImpact: 0.028947619 },
+    { step: 29, x: 0.667580345, y: 11.0001, z: -7.54233741, vx: 0.060672273, vy: 0, vz: -7.062888476, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.353157453, landImpact: 0.028947619 },
+    { step: 39, x: 0.674333456, y: 11.0001, z: -10.712771313, vx: 0.001586898, vy: 0, vz: -4.921660241, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.246083025, landImpact: 0.028947619 },
+    { step: 49, x: 0.720818, y: 11.0001, z: -13.333091281, vx: 0.054998976, vy: 0, vz: -6.395901401, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.319806893, landImpact: 0.028947619 },
+    { step: 59, x: 0.726939647, y: 11.0001, z: -16.585000521, vx: 0.001438511, vy: 0, vz: -5.571720154, onGround: true, stepOffset: 0, impactSpeed: 10.115780368, justLanded: true, distance: 0.278586017, landImpact: 0.028947619 },
   ],
 };
 const PLANETS = { earth: { gravity: 9.81 }, europa: { gravity: 1.31 }, jupiter: { gravity: 24.79 } };

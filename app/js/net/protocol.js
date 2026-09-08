@@ -53,9 +53,10 @@ let _contentHash = null;
  */
 export function contentHash() {
   if (_contentHash) return _contentHash;
+  const buildRevision = 'lunacrust-1.1';
   const blockPart = BLOCKS.map((b) => b.id + ':' + b.key).join('|');
   const itemPart = ITEMS.map((it, i) => i + ':' + (it?.key ?? '')).join('|');
-  _contentHash = hex8(fnv1a(JSON.stringify(MOB_TYPES), fnv1a(itemPart, fnv1a(blockPart, FNV_OFFSET))));
+  _contentHash = hex8(fnv1a(JSON.stringify(MOB_TYPES), fnv1a(itemPart, fnv1a(blockPart, fnv1a(buildRevision, FNV_OFFSET)))));
   return _contentHash;
 }
 

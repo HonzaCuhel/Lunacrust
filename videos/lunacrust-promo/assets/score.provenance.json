@@ -1,0 +1,134 @@
+{
+  "title": "Departure Window",
+  "purpose": "Original instrumental score for the Lunacrust 35-second gameplay promo",
+  "generator": "tools/make-promo-score.mjs",
+  "creation": "Original deterministic musical composition and DSP synthesis using Node.js built-ins",
+  "sourceAudio": [],
+  "externalDependencies": [],
+  "seed": "0x4c554e41",
+  "sampleRate": 48000,
+  "channels": 2,
+  "bitDepth": 24,
+  "durationSeconds": 35,
+  "frames": 1680000,
+  "bpm": 120,
+  "key": "D minor with added ninths",
+  "structure": [
+    {
+      "start": 0,
+      "end": 5,
+      "description": "Mysterious minor-ninth pad, heartbeat bass, glass plucks"
+    },
+    {
+      "start": 5,
+      "end": 12,
+      "description": "Drum and bass build with an eighth-note arpeggio"
+    },
+    {
+      "start": 12,
+      "end": 20,
+      "description": "Exploration energy, sixteenth-note arpeggios and four-on-the-floor drums"
+    },
+    {
+      "start": 20,
+      "end": 28,
+      "description": "Full lead melody, wide chords, bigger rhythmic drive"
+    },
+    {
+      "start": 28,
+      "end": 29,
+      "description": "Impact and musical breath"
+    },
+    {
+      "start": 29,
+      "end": 35,
+      "description": "Tonic logo resolution; final 1.3 seconds fade smoothly to silence"
+    }
+  ],
+  "instruments": [
+    "Band-limited detuned saw pads",
+    "Filtered pluck arpeggios",
+    "Five-voice saw lead",
+    "Sub and filtered saw bass",
+    "Synthesized kick and snare",
+    "Seeded-noise metallic hats",
+    "Filtered noise risers and impacts"
+  ],
+  "processing": [
+    "Stereo panning",
+    "Damped feedback-delay reverb",
+    "Dotted-eighth ping-pong echo",
+    "Kick-controlled ducking",
+    "Stereo-linked compression",
+    "Gentle saturation",
+    "DC rejection",
+    "Smooth tail fade"
+  ],
+  "samplePeakDbFS": -2,
+  "rmsDbFS": -17.389,
+  "sha256": "f52921a932398307b80828dae1e764d490820469013a7a115fc255b4622442bf",
+  "verification": {
+    "durationSeconds": 35,
+    "pcmFormat": {
+      "codec_name": "pcm_s24le",
+      "sample_rate": "48000",
+      "channels": 2,
+      "bits_per_sample": 24
+    },
+    "deterministicRerenderSha256Matches": true,
+    "ffmpegEbur128": {
+      "integratedLoudnessLUFS": -16,
+      "loudnessRangeLU": 7.9,
+      "truePeakDbTP": -1.2
+    },
+    "ffmpegAnalysisCommand": "ffmpeg -hide_banner -i videos/lunacrust-promo/assets/score.wav -af ebur128=peak=true -f null -",
+    "musicalSections": [
+      {
+        "start": 0,
+        "end": 5,
+        "rmsDbFS": -26.2,
+        "peakDbFS": -11.1
+      },
+      {
+        "start": 5,
+        "end": 12,
+        "rmsDbFS": -18.74,
+        "peakDbFS": -4.55
+      },
+      {
+        "start": 12,
+        "end": 20,
+        "rmsDbFS": -15.71,
+        "peakDbFS": -2.26
+      },
+      {
+        "start": 20,
+        "end": 28,
+        "rmsDbFS": -15.01,
+        "peakDbFS": -2
+      },
+      {
+        "start": 28,
+        "end": 29,
+        "rmsDbFS": -25.64,
+        "peakDbFS": -8.06
+      },
+      {
+        "start": 29,
+        "end": 33,
+        "rmsDbFS": -18.04,
+        "peakDbFS": -2.43
+      },
+      {
+        "start": 34,
+        "end": 35,
+        "rmsDbFS": -69.16,
+        "peakDbFS": -52.02
+      }
+    ],
+    "lastStereoFrame": [
+      0,
+      0
+    ]
+  }
+}

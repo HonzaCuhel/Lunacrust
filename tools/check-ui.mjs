@@ -43,8 +43,8 @@ try {
  await page.setViewportSize({width:1280,height:800});
  await page.locator('#seed-input').fill('777');
  await page.locator('#btn-land').click();
- await page.waitForFunction(()=>window.__space.game.spawned&&window.__space.game.running,{timeout:60000});
- await page.evaluate(()=>{window.__space.game.setPaused(false);window.__space.show('play')});
+ await page.waitForFunction(()=>window.__space.game.spawned&&window.__space.game.running&&window.__space.state.screen==='play',{timeout:60000});
+ await page.evaluate(()=>{window.__space.game.hooks.onPointerLost=()=>{};window.__space.game.setPaused(false);window.__space.show('play')});
  const start=await page.evaluate(()=>({...window.__space.game.player.pos}));
  await page.keyboard.down('w');await page.waitForTimeout(900);await page.keyboard.up('w');
  const end=await page.evaluate(()=>({...window.__space.game.player.pos}));
@@ -70,6 +70,6 @@ try {
  check('explicit confirmation starts the replacement world',await page.evaluate(()=>window.__space.game.seed===778));
  await page.keyboard.press('Escape');await page.waitForFunction(()=>window.__space.state.screen==='pause');
  await page.locator('#btn-orbit').click();await page.waitForFunction(()=>window.__space.state.screen==='menu');
- check('confirmed new world persists',await page.evaluate(()=>JSON.parse(localStorage.getItem('spacemc:save:earth')).seed===778));
+ check('confirmed new world persists',await page.evaluate(()=>JSON.parse(localStorage.getItem('spacemc:save:campaign-current')).worlds.earth.seed===778));
  check('no browser runtime or resource errors',errors.length===0);
 } finally { await writeFile(`${out}/report.json`,JSON.stringify({checks,errors},null,2));await browser.close(); }

@@ -1,0 +1,58 @@
+[
+  {
+    "world": "earth",
+    "seed": "lunacrust-first-signal",
+    "image": "site/assets/world-earth.jpg",
+    "clip": "earth.mp4",
+    "errors": []
+  },
+  {
+    "world": "luna",
+    "seed": "lunacrust-first-signal",
+    "image": "site/assets/world-moon.jpg",
+    "clip": null,
+    "errors": []
+  },
+  {
+    "world": "mars",
+    "seed": "lunacrust-first-signal",
+    "image": "site/assets/world-mars.jpg",
+    "clip": "mars.mp4",
+    "errors": []
+  },
+  {
+    "world": "venus",
+    "seed": "lunacrust-first-signal",
+    "image": "site/assets/world-venus.jpg",
+    "clip": null,
+    "errors": []
+  },
+  {
+    "world": "europa",
+    "seed": "lunacrust-first-signal",
+    "image": "site/assets/world-europa.jpg",
+    "clip": "europa.mp4",
+    "errors": []
+  },
+  {
+    "world": "io",
+    "seed": "lunacrust-first-signal",
+    "image": "site/assets/world-io.jpg",
+    "clip": null,
+    "errors": []
+  },
+  {
+    "world": "titan",
+    "seed": "lunacrust-first-signal",
+    "image": "site/assets/world-titan.jpg",
+    "clip": null,
+    "errors": []
+  },
+  {
+    "world": "jupiter",
+    "seed": "lunacrust-first-signal",
+    "image": "site/assets/world-jupiter.jpg",
+    "clip": "jupiter.mp4",
+    "errors": []
+  }
+]
