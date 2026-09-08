@@ -11,6 +11,8 @@
   --lime: #d6ef8c;
   --muted: #586258;
   --line: #cbd0c2;
+  --section-max-width: 1600px;
+  --content-max-width: 1400px;
 }
 * {
   box-sizing: border-box;
@@ -79,11 +81,13 @@ button {
   top: 12px;
 }
 .nav {
+  max-width: var(--content-max-width);
+  margin-inline: auto;
   height: 91px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 3.5%;
+  padding: 0 min(3.5vw, 49px);
   gap: 28px;
 }
 .brand {
@@ -119,7 +123,9 @@ button {
   font-weight: 600;
 }
 .hero {
-  margin: 0 12px;
+  width: calc(100% - 24px);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
   position: relative;
   isolation: isolate;
   min-height: 790px;
@@ -265,9 +271,9 @@ button {
   left: 3.1%;
   right: 3.1%;
   bottom: 59px;
-  font-size: 16.1vw;
+  font-size: min(16.1vw, 226px);
   line-height: 0.9;
-  letter-spacing: -1.05vw;
+  letter-spacing: max(-1.05vw, -14.7px);
   font-weight: 700;
   color: var(--lime);
   white-space: nowrap;
@@ -287,10 +293,12 @@ button {
   gap: 25px;
 }
 .release-strip {
+  width: 93%;
+  max-width: var(--content-max-width);
   display: flex;
   align-items: center;
   gap: 30px;
-  margin: 0 3.5%;
+  margin: 0 auto;
   padding: 23px 0;
   border-bottom: 1px solid var(--line);
   font-size: 12px;
@@ -313,8 +321,8 @@ button {
   font-weight: 600;
 }
 .section {
-  max-width: 1600px;
-  padding: 100px 6.25%;
+  max-width: var(--section-max-width);
+  padding: 100px min(6.25vw, 100px);
   margin: auto;
 }
 .section-heading {
@@ -732,10 +740,6 @@ h2 {
   padding-top: 22px;
 }
 @media (min-width: 1600px) {
-  .hero-wordmark {
-    font-size: 258px;
-    letter-spacing: -16px;
-  }
   .hero {
     min-height: 890px;
   }
@@ -848,7 +852,7 @@ h2 {
     padding: 10px 13px;
   }
   .hero {
-    margin: 0 8px;
+    width: calc(100% - 16px);
     min-height: 710px;
   }
   .hero-image {
@@ -907,6 +911,7 @@ h2 {
     display: none;
   }
   .release-strip {
+    width: 88%;
     margin: 0 6%;
     padding: 20px 0;
     flex-wrap: wrap;
