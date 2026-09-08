@@ -13,6 +13,7 @@ npm ci
 node tools/build-site.mjs
 node tools/serve-site.mjs
 node tools/check-site.mjs
+node tools/check-model.mjs
 ```
 
 The build writes only under `output/`. It includes no Electron processes, secrets,
@@ -35,6 +36,26 @@ After publication, repeat `LUNACRUST_SITE_URL=https://honzacuhel.github.io/Lunac
 and check the trailer URL and `build.json` through the public endpoint. Browser
 checks use fresh profiles and never read or modify a player's saved expeditions.
 
+## Interactive 3D explorer
+
+The world selector also drives a live miniature scene. `site/world-viewer.js`
+reuses the game's `MobRender`, creature definitions, planet palettes and block
+atlas. `site/world-diorama.js` composes the small display island; it is an original
+illustration, not a generated playable save. Visitors can inspect either creature,
+orbit with mouse/touch/arrow keys, zoom with pinch or buttons, reset the camera,
+and explicitly start or pause rotation. Photographs remain one click away.
+
+The viewer loads near its section, caps pixel density and stops drawing when it
+is offscreen, hidden or paused. It accesses no saves or LAN sessions. Without
+WebGL2 or JavaScript the existing photograph remains; context loss switches back
+to photographs. OrbitControls comes from the pinned Three.js package, is copied
+locally at build time and retains its MIT license in `vendor/three-LICENSE.txt`.
+
+`tools/check-model.mjs` verifies actual changed WebGL pixels for all eight worlds,
+keyboard/pointer/pinch controls, four viewport widths, GPU context recovery and
+fallbacks. Repeat it against the public URL after publishing, with
+`LUNACRUST_MODEL_REPORT=output/model-public-check` to keep a separate receipt.
+
 ## Video
 
 The 35-second HyperFrames production project is in `videos/lunacrust-promo/`.
@@ -45,4 +66,4 @@ reliably render arbitrary HTML video players in Markdown.
 
 The site is responsive; the game itself remains designed for desktop keyboard
 and mouse/trackpad controls. Mobile visitors can browse the site and watch the
-trailer. LAN hosting/discovery requires the desktop app.
+trailer and turn the 3D models. LAN hosting/discovery requires the desktop app.

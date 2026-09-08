@@ -443,7 +443,7 @@ h2 {
   letter-spacing: -4px;
   margin: 9px 0 13px;
 }
-.world-copy > p:last-child {
+.world-copy > #world-description {
   font-size: 15px;
   line-height: 1.6;
   max-width: 370px;
@@ -983,7 +983,7 @@ h2 {
   .world-copy .eyebrow {
     font-size: 9px;
   }
-  .world-copy > p:last-child {
+  .world-copy > #world-description {
     font-size: 13px;
     max-width: 280px;
   }
@@ -1159,7 +1159,7 @@ h2 {
   .mode h3 {
     font-size: 49px;
   }
-  .world-copy > p:last-child {
+  .world-copy > #world-description {
     font-size: 12px;
   }
   .faq-section h2 {
@@ -1180,4 +1180,245 @@ h2 {
 .hero a:focus-visible,
 .footer a:focus-visible {
   outline-color: var(--lime);
+}
+
+/* One live miniature shares the existing world selector with the photographs. */
+.world-stage [hidden] {
+  display: none !important;
+}
+.world-stage[data-preview="model"] {
+  background: #111d21;
+}
+.world-stage[data-preview="model"] > img,
+.world-stage[data-preview="model"] > .world-shade,
+.world-stage[data-preview="model"] > .world-number {
+  visibility: hidden;
+}
+.world-view-switch {
+  position: absolute;
+  z-index: 4;
+  top: 28px;
+  left: 4.5%;
+  display: flex;
+  gap: 4px;
+}
+.world-view-switch button,
+.model-subjects button,
+.model-actions button {
+  background: #17262b;
+  border: 1px solid #586b6b;
+  color: #edf3e9;
+  padding: 11px 15px;
+  font-size: 12px;
+  min-height: 44px;
+}
+.world-view-switch button[aria-pressed="true"],
+.model-subjects button[aria-pressed="true"],
+.model-actions button[aria-pressed="true"] {
+  background: var(--lime);
+  color: var(--ink);
+  border-color: var(--lime);
+}
+.world-view-switch button:hover,
+.model-subjects button:hover,
+.model-actions button:hover {
+  border-color: var(--lime);
+}
+.world-stage button:focus-visible,
+.world-stage canvas:focus-visible {
+  outline: 3px solid var(--lime);
+  outline-offset: 4px;
+}
+.world-stage button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.model-tools {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.model-tools > * {
+  pointer-events: auto;
+}
+.model-subjects {
+  position: absolute;
+  top: 28px;
+  right: 3%;
+  display: flex;
+  gap: 4px;
+  z-index: 3;
+}
+.model-viewport {
+  position: absolute;
+  top: 90px;
+  right: 0;
+  bottom: 103px;
+  left: 29%;
+}
+.model-viewport canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+}
+.model-viewport canvas:active {
+  cursor: grabbing;
+}
+.model-actions {
+  position: absolute;
+  right: 4%;
+  bottom: 56px;
+  display: flex;
+  gap: 5px;
+  z-index: 3;
+}
+.model-actions button[data-camera^="zoom"] {
+  font-size: 21px;
+  padding: 5px 14px;
+}
+.model-help {
+  position: absolute;
+  bottom: 28px;
+  right: 4%;
+  font-size: 11px;
+  color: #c0ccc7;
+}
+.model-status {
+  position: absolute;
+  top: 90px;
+  left: 4.5%;
+  right: 4.5%;
+  z-index: 4;
+  background: #111d21;
+  padding: 12px;
+  font-size: 13px;
+  max-width: 560px;
+}
+.model-status:empty {
+  display: none;
+}
+.world-stage[data-preview="model"] .world-copy {
+  bottom: 80px;
+  max-width: 27%;
+  pointer-events: none;
+}
+.world-stage[data-preview="model"] .world-copy h3 {
+  font-size: 64px;
+  letter-spacing: -3px;
+}
+.world-stage[data-preview="model"] #world-description {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.world-stage[data-preview="model"] .world-copy .eyebrow {
+  font-size: 9px;
+}
+.model-caption {
+  font-size: 11px;
+  line-height: 1.6;
+  margin-top: 28px;
+  color: #b6c5c0;
+}
+.world-copy .model-species {
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--lime);
+  line-height: 1.5;
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .world-view-switch {
+    top: 24px;
+  }
+  .model-subjects {
+    top: 84px;
+  }
+  .model-viewport {
+    top: 136px;
+    left: 27%;
+  }
+  .world-stage[data-preview="model"] .world-copy h3 {
+    font-size: 50px;
+  }
+}
+@media (max-width: 760px) {
+  .world-stage[data-preview="model"] {
+    height: 840px;
+  }
+  .world-view-switch {
+    top: 20px;
+    left: 20px;
+  }
+  .world-view-switch button,
+  .model-subjects button {
+    padding: 10px;
+    font-size: 11px;
+  }
+  .model-subjects {
+    top: 82px;
+    left: 20px;
+    right: 20px;
+    gap: 4px;
+  }
+  .model-subjects button {
+    flex: 1;
+  }
+  .model-viewport {
+    top: 140px;
+    height: 345px;
+    left: 8px;
+    right: 8px;
+    bottom: auto;
+  }
+  .model-actions {
+    top: 505px;
+    bottom: auto;
+    left: 20px;
+    right: 20px;
+    justify-content: center;
+  }
+  .model-actions button {
+    font-size: 11px;
+    padding: 10px;
+  }
+  .model-help {
+    top: 565px;
+    bottom: auto;
+    left: 20px;
+    right: 20px;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .world-stage[data-preview="model"] .world-copy {
+    left: 24px;
+    right: 24px;
+    bottom: 27px;
+    max-width: none;
+  }
+  .world-stage[data-preview="model"] .world-copy h3 {
+    font-size: 42px;
+    letter-spacing: -2px;
+    margin: 8px 0;
+  }
+  .world-stage[data-preview="model"] #world-description {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .model-caption {
+    margin-top: 15px;
+    font-size: 10px;
+  }
+  .model-caption br {
+    display: none;
+  }
+  .world-copy .model-species {
+    margin-top: 8px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .world-stage[data-preview="photo"] .world-number {
+    top: 88px;
+  }
 }

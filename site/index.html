@@ -186,7 +186,7 @@
             <span>08</span>Jupiter
           </button>
         </div>
-        <div class="world-stage">
+        <div class="world-stage" data-viewer-state="idle">
           <img
             id="world-image"
             src="assets/world-europa.jpg"
@@ -196,6 +196,65 @@
             loading="lazy"
           />
           <div class="world-shade"></div>
+          <div
+            class="world-view-switch"
+            role="group"
+            aria-label="World preview"
+            hidden
+          >
+            <button type="button" data-preview="model" aria-pressed="true">
+              Interactive 3D
+            </button>
+            <button type="button" data-preview="photo" aria-pressed="false">
+              In-game view
+            </button>
+          </div>
+          <div class="model-tools" hidden>
+            <div
+              class="model-subjects"
+              role="group"
+              aria-label="Inspect a model"
+            >
+              <button type="button" data-subject="both" aria-pressed="true">
+                The diorama
+              </button>
+              <button type="button" data-subject="skitter" aria-pressed="false">
+                Flux Skitter
+              </button>
+              <button
+                type="button"
+                data-subject="resonator"
+                aria-pressed="false"
+              >
+                Basalt Resonator
+              </button>
+            </div>
+            <div class="model-viewport" id="model-viewport"></div>
+            <div
+              class="model-actions"
+              role="group"
+              aria-label="3D camera controls"
+            >
+              <button type="button" data-camera="zoom-in" aria-label="Zoom in">
+                +
+              </button>
+              <button
+                type="button"
+                data-camera="zoom-out"
+                aria-label="Zoom out"
+              >
+                −
+              </button>
+              <button type="button" data-camera="reset">Reset view</button>
+              <button type="button" data-camera="motion" aria-pressed="false">
+                Rotate
+              </button>
+            </div>
+            <p class="model-help" id="model-help">
+              Drag to orbit · Pinch or + / − to zoom · Arrow keys to rotate
+            </p>
+          </div>
+          <p class="model-status" role="status" aria-live="polite"></p>
           <div class="world-copy" aria-live="polite" aria-atomic="true">
             <p class="eyebrow" id="world-type">ICE SPIRES / LOW GRAVITY</p>
             <h3 id="world-name">Europa</h3>
@@ -203,6 +262,11 @@
               Find your own quiet corner of a frozen ocean. There’s nothing
               small about the view.
             </p>
+            <p class="model-caption" hidden>
+              Original game models and textures.<br />A miniature scene, yours
+              to turn.
+            </p>
+            <p class="model-species" aria-live="polite" hidden></p>
           </div>
           <span class="world-number" id="world-number" aria-hidden="true"
             >05</span

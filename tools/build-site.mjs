@@ -19,6 +19,8 @@ const required = [
   "index.html",
   "styles.css",
   "main.js",
+  "world-viewer.js",
+  "world-diorama.js",
   "assets/lunacrust-trailer.mp4",
   "assets/trailer-poster.jpg",
   "assets/SpaceGrotesk.ttf",
@@ -27,6 +29,24 @@ for (const file of required) await stat(join(root, "site", file));
 await stat(join(root, "app/vendor/three.module.js"));
 await mkdir(out, { recursive: true });
 await cp(join(root, "site"), out, { recursive: true });
+// Reuse the pinned Three.js controls locally, with the exact game renderer.
+await mkdir(join(out, "vendor"), { recursive: true });
+const orbitSource = await readFile(
+  join(root, "node_modules/three/examples/jsm/controls/OrbitControls.js"),
+  "utf8",
+);
+if (!orbitSource.includes("from 'three'"))
+  throw Error(
+    "Unexpected OrbitControls import; check the pinned Three.js version",
+  );
+await writeFile(
+  join(out, "vendor/OrbitControls.js"),
+  orbitSource.replace("from 'three'", "from '../demo/vendor/three.module.js'"),
+);
+await cp(
+  join(root, "node_modules/three/LICENSE"),
+  join(out, "vendor/three-LICENSE.txt"),
+);
 await cp(join(root, "app"), join(out, "demo"), {
   recursive: true,
   filter: (source) => !source.endsWith(".DS_Store") && !source.endsWith(".mp3"),
