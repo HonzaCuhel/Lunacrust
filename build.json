@@ -1,7 +1,7 @@
 {
   "version": "1.1.0",
   "channel": "release-candidate",
-  "sourceCommit": "ef68a7f0773bb5f4631f5b11908b6ce915733968",
+  "sourceCommit": "565b75946804f6a6947444a19f1666714939b8d9",
   "dirty": false,
   "browserMode": "single-player",
   "desktopLANMaxPlayers": 8

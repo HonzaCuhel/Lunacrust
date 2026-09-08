@@ -51,6 +51,7 @@ const worlds = {
 const buttons = [...document.querySelectorAll("[data-world]")];
 const picture = document.querySelector("#world-image");
 let selection = 0;
+let viewer;
 async function choose(button) {
   const token = ++selection,
     id = button.dataset.world,
@@ -72,6 +73,7 @@ async function choose(button) {
   document.querySelector("#world-number").textContent = String(
     buttons.indexOf(button) + 1,
   ).padStart(2, "0");
+  viewer?.setWorld(id === "moon" ? "luna" : id);
 }
 for (const button of buttons) {
   button.addEventListener("click", () => choose(button));
@@ -95,3 +97,29 @@ const film = document.querySelector("#trailer-video");
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && !film.paused) film.pause();
 });
+
+// Keep the page light until its 3D section is near the viewport. A photograph
+// remains available when JavaScript, WebGL2 or the model module is unavailable.
+const stage = document.querySelector(".world-stage");
+const nearWorlds = new IntersectionObserver(
+  async (entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    nearWorlds.disconnect();
+    stage.dataset.viewerState = "loading";
+    stage.querySelector(".model-status").textContent =
+      "Preparing your miniature world…";
+    try {
+      const { createWorldViewer } = await import("./world-viewer.js");
+      const id = buttons.find(
+        (button) => button.getAttribute("aria-pressed") === "true",
+      ).dataset.world;
+      viewer = createWorldViewer(stage, id === "moon" ? "luna" : id);
+    } catch {
+      stage.dataset.viewerState = "unavailable";
+      stage.querySelector(".model-status").textContent =
+        "3D preview unavailable in this browser. Explore the in-game photographs instead.";
+    }
+  },
+  { rootMargin: "200px" },
+);
+nearWorlds.observe(stage);
